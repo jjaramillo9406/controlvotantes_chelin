@@ -1,0 +1,33 @@
+# Python
+*.pyc
+__pycache__/
+*/*/__pycache__/
+*.pyd
+*.whl
+
+# Virtual Environment
+.env
+.venv
+env/
+venv/
+ENV/
+bin/
+lib/
+include/
+
+# Databases
+db.sqlite3
+*.sqlite3
+/media/ # Exclude uploaded media files
+
+# Static files (if collected locally for deployment)
+# If you build static files locally and commit them, remove this line.
+/static/
+
+# IDE-specific files (e.g., PyCharm, VS Code)
+.idea/
+.vscode/
+
+# Sensitive data/settings
+local_settings.py
+.secrets.toml # for Streamlit/other apps
