@@ -1,0 +1,184 @@
+{% load static %}
+<!-- Navbar moderno y responsive -->
+<nav class="bg-white shadow-lg border-b border-gray-200 sticky top-0 z-50">
+  <div class="container mx-auto px-4">
+    <div class="flex justify-between items-center py-3">
+      <!-- Logo -->
+      <a href="{% url 'index' %}" class="flex items-center space-x-2">
+        <img
+          src="{% static 'img/logo+700-noback.png' %}"
+          alt="Logo +700"
+          class="h-12 sm:h-14 object-contain transition-transform hover:scale-105"
+        />
+      </a>
+
+      <!-- Botón hamburguesa para móvil -->
+      <button
+        id="mobileMenuButton"
+        type="button"
+        class="lg:hidden inline-flex items-center p-2 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 focus:outline-none focus:ring-2 focus:ring-red-400 transition-colors"
+      >
+        <span class="sr-only">Abrir menú</span>
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          />
+        </svg>
+      </button>
+
+      <!-- Menú desktop -->
+      <div class="hidden lg:flex lg:items-center lg:space-x-2">
+        <a
+          href="{% url 'index' %}"
+          class="flex items-center space-x-2 px-4 py-2 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200 font-medium"
+        >
+          <i class="fas fa-user-circle icon-institucional"></i>
+          <span>Mis votantes</span>
+        </a>
+
+        {% if request.session.nivel == 99 %}
+        <a
+          href="{% url 'consultas' %}"
+          class="flex items-center space-x-2 px-4 py-2 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200 font-medium"
+        >
+          <i class="fa fa-solid fa-search icon-institucional"></i>
+          <span>Consultas</span>
+        </a>
+        <a
+          href="{% url 'dashboard' %}"
+          class="flex items-center space-x-2 px-4 py-2 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200 font-medium"
+        >
+          <i class="fa fa-solid fa-gauge-simple-high icon-institucional"></i>
+          <span>Progreso Electoral</span>
+        </a>
+
+        <a
+          href="{% url 'estadisticas' %}"
+          class="flex items-center space-x-2 px-4 py-2 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200 font-medium"
+        >
+          <i class="fas fa-chart-simple icon-institucional"></i>
+          <span>Estadísticas</span>
+        </a>
+
+        <a
+          href="{% url 'listas' %}"
+          class="flex items-center space-x-2 px-4 py-2 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200 font-medium"
+        >
+          <i class="fas fa-table-list icon-institucional"></i>
+          <span>Listas</span>
+        </a>
+
+        <a
+          href="{% url 'usuarios' %}"
+          class="flex items-center space-x-2 px-4 py-2 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200 font-medium"
+        >
+          <i class="fas fa-users icon-institucional"></i>
+          <span>Usuarios</span>
+        </a>
+        {% endif %}
+
+        <a
+          href="{% url 'logout' %}"
+          class="flex items-center space-x-2 px-4 py-2 text-white gradient-button rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg ml-2"
+        >
+          <i class="fas fa-sign-out"></i>
+          <span>Salir</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Menú móvil (oculto por defecto) -->
+    <div id="mobileMenu" class="hidden lg:hidden pb-4 space-y-2">
+      <a
+        href="{% url 'index' %}"
+        class="flex items-center space-x-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200"
+      >
+        <i class="fas fa-user-circle icon-institucional w-5"></i>
+        <span class="font-medium">Mis votantes</span>
+      </a>
+
+      {% if request.session.nivel == 99 %}
+      <a
+        href="{% url 'consultas' %}"
+        class="flex items-center space-x-2 px-4 py-2 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200 font-medium"
+      >
+        <i class="fa fa-solid fa-search icon-institucional"></i>
+        <span>Consultas</span>
+      </a>
+      <a
+        href="{% url 'dashboard' %}"
+        class="flex items-center space-x-2 px-4 py-2 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200 font-medium"
+      >
+        <i class="fa fa-solid fa-gauge-simple-high icon-institucional"></i>
+        <span>Progreso Electoral</span>
+      </a>
+      <a
+        href="{% url 'estadisticas' %}"
+        class="flex items-center space-x-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200"
+      >
+        <i class="fas fa-chart-simple icon-institucional w-5"></i>
+        <span class="font-medium">Estadísticas</span>
+      </a>
+
+      <a
+        href="{% url 'listas' %}"
+        class="flex items-center space-x-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200"
+      >
+        <i class="fas fa-table-list icon-institucional w-5"></i>
+        <span class="font-medium">Listas</span>
+      </a>
+
+      <a
+        href="{% url 'usuarios' %}"
+        class="flex items-center space-x-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200"
+      >
+        <i class="fas fa-users icon-institucional w-5"></i>
+        <span class="font-medium">Usuarios</span>
+      </a>
+      {% endif %}
+
+      <a
+        href="{% url 'logout' %}"
+        class="flex items-center space-x-3 px-4 py-3 text-white gradient-button rounded-lg transition-all duration-200 shadow-md"
+      >
+        <i class="fas fa-sign-out w-5"></i>
+        <span class="font-medium">Salir</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<script>
+  // Toggle mobile menu
+  const mobileMenuButton = document.getElementById("mobileMenuButton");
+  const mobileMenu = document.getElementById("mobileMenu");
+
+  mobileMenuButton?.addEventListener("click", () => {
+    mobileMenu.classList.toggle("hidden");
+  });
+
+  // Cerrar menú al hacer click en un enlace (móvil)
+  const mobileLinks = mobileMenu?.querySelectorAll("a");
+  mobileLinks?.forEach((link) => {
+    link.addEventListener("click", () => {
+      if (window.innerWidth < 1024) {
+        mobileMenu.classList.add("hidden");
+      }
+    });
+  });
+
+  // Cerrar menú al cambiar tamaño de ventana
+  window.addEventListener("resize", () => {
+    if (window.innerWidth >= 1024) {
+      mobileMenu?.classList.add("hidden");
+    }
+  });
+</script>

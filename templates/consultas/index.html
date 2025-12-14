@@ -1,0 +1,334 @@
+{% extends 'shared/layout.html' %} 
+{% load static %}
+
+{% block title %}Consultas{% endblock %} 
+
+{% block content %}
+<div class="consulta-container">
+    <!-- Card de Búsqueda -->
+    <div id="searchCard" class="search-card fade-in">
+        <div class="search-card-header">
+            <i class="fas fa-search search-icon-large"></i>
+            <h1 class="search-title">Consulta de Votante</h1>
+            <p class="search-subtitle">Ingresa el número de identificación para consultar</p>
+        </div>
+
+        <form class="search-form" onsubmit="searchVotante(event)">
+            <div class="form-group">
+                <label for="nitInput" class="form-label">
+                    <i class="fas fa-id-card"></i> Número de Identificación
+                </label>
+                <i class="fas fa-hashtag input-icon mt-1"></i>
+                <input 
+                    type="text" 
+                    id="nitInput" 
+                    class="form-input"
+                    placeholder="Ej: 1143375243"
+                    maxlength="10"
+                    pattern="[0-9]*"
+                    inputmode="numeric"
+                    required
+                    autocomplete="off"
+                />
+            </div>
+
+            <button type="submit" class="search-button" id="searchBtn">
+                <div class="button-content">
+                    <i class="fas fa-search"></i>
+                    <span>Consultar</span>
+                </div>
+            </button>
+
+            <div id="errorMessage" style="display: none;"></div>
+        </form>
+    </div>
+
+    <!-- Card de Resultados -->
+    <div id="resultCard" style="display: none;"></div>
+</div>
+{% endblock %} 
+
+{% block scripts %}
+<script>
+// Validar que solo se ingresen números
+document.getElementById('nitInput').addEventListener('input', function(e) {
+    this.value = this.value.replace(/[^0-9]/g, '');
+});
+
+// Función para normalizar el estado y obtener clase CSS
+function getStatusClass(estado) {
+    if (!estado) return 'status-registrado';
+    
+    const estadoLower = estado.toLowerCase().trim();
+    const estadoNormalized = estadoLower
+        .replace(/\s+/g, '-')
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, ""); // Remover acentos
+    
+    return `status-${estadoNormalized}`;
+}
+
+// Función para obtener el icono según el estado
+function getStatusIcon(estado) {
+    if (!estado) return 'fa-check-circle';
+    
+    const estadoLower = estado.toLowerCase().trim();
+    
+    if (estadoLower.includes('zonificado')) {
+        return 'fa-map-marked-alt';
+    } else if (estadoLower.includes('registrado')) {
+        return 'fa-check-circle';
+    } else if (estadoLower.includes('asistio') && !estadoLower.includes('no')) {
+        return 'fa-user-check';
+    } else if (estadoLower.includes('no asistio')) {
+        return 'fa-user-times';
+    }
+    
+    return 'fa-info-circle';
+}
+
+// Función para buscar votante
+async function searchVotante(event) {
+    event.preventDefault();
+    
+    const nit = document.getElementById('nitInput').value.trim();
+    const searchBtn = document.getElementById('searchBtn');
+    const errorMessage = document.getElementById('errorMessage');
+    
+    // Validar que tenga al menos 6 dígitos
+    if (nit.length < 6) {
+        showError('El número de identificación debe tener al menos 6 dígitos');
+        return;
+    }
+    
+    // Mostrar loading
+    searchBtn.disabled = true;
+    searchBtn.innerHTML = `
+        <div class="button-content">
+            <div class="loading-spinner"></div>
+            <span>Buscando...</span>
+        </div>
+    `;
+    errorMessage.style.display = 'none';
+    
+    try {
+        const response = await fetch(`/consultas/search_votante/?nit=${nit}`);
+        
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        let data = await response.json();
+        
+        // Si la respuesta es un string JSON, parsearlo
+        if (typeof data === 'string') {
+            data = JSON.parse(data);
+        }
+        
+        // Verificar respuesta
+        if (data.respuesta !== 'OK') {
+            throw new Error(data.respuesta || 'No se encontró el votante');
+        }
+        
+        // Mostrar resultados
+        showResults(data);
+        
+    } catch (error) {
+        console.error('Error en la búsqueda:', error);
+        showError(error.message || 'Error al buscar el votante. Por favor, intente nuevamente.');
+        searchBtn.disabled = false;
+        searchBtn.innerHTML = `
+            <div class="button-content">
+                <i class="fas fa-search"></i>
+                <span>Consultar</span>
+            </div>
+        `;
+    }
+}
+
+// Función para mostrar error
+function showError(message) {
+    const errorMessage = document.getElementById('errorMessage');
+    errorMessage.innerHTML = `
+        <div class="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    errorMessage.style.display = 'block';
+}
+
+// Función para mostrar resultados
+function showResults(data) {
+    const searchCard = document.getElementById('searchCard');
+    const resultCard = document.getElementById('resultCard');
+    
+    // Obtener clase e icono del estado
+    const statusClass = getStatusClass(data.estado);
+    const statusIcon = getStatusIcon(data.estado);
+    
+    // Ocultar card de búsqueda con animación
+    searchCard.classList.add('fade-out');
+    
+    setTimeout(() => {
+        searchCard.style.display = 'none';
+        
+        // Crear HTML de resultados
+        resultCard.innerHTML = `
+            <div class="result-card fade-in">
+                <div class="result-header">
+                    <h2 class="result-title">
+                        <i class="fas fa-user-check"></i> Información del Votante
+                    </h2>
+                    <button class="back-button" onclick="backToSearch()">
+                        <i class="fas fa-arrow-left"></i>
+                        Nueva Consulta
+                    </button>
+                </div>
+                
+                <div class="status-badge-large ${statusClass}">
+                    <i class="fas ${statusIcon}"></i> ${data.estado || 'Sin Estado'}
+                </div>
+                
+                <div class="votante-info">
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-id-card"></i> Identificación
+                        </div>
+                        <div class="info-value">${data.identificacion || 'N/A'}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-user"></i> Nombres
+                        </div>
+                        <div class="info-value">${data.nombres || 'N/A'}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-user"></i> Apellidos
+                        </div>
+                        <div class="info-value">${data.apellidos || 'N/A'}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-map-marker-alt"></i> Dirección
+                        </div>
+                        <div class="info-value">${data.direccion || 'N/A'}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-map"></i> Departamento
+                        </div>
+                        <div class="info-value">${data.departamento || 'N/A'}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-city"></i> Municipio
+                        </div>
+                        <div class="info-value">${data.municipio || 'N/A'}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-phone"></i> Teléfono
+                        </div>
+                        <div class="info-value ${!data.telefono ? 'info-value-empty' : ''}">${data.telefono || 'No registrado'}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-envelope"></i> Email
+                        </div>
+                        <div class="info-value ${!data.email ? 'info-value-empty' : ''}">${data.email || 'No registrado'}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-user-tie"></i> Líder
+                        </div>
+                        <div class="info-value">${data.lider || 'N/A'}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-calendar"></i> Fecha de Registro
+                        </div>
+                        <div class="info-value">${formatDate(data.fecha_registro) || 'N/A'}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-box"></i> Puesto
+                        </div>
+                        <div class="info-value ${!data.puesto ? 'info-value-empty' : ''}">${data.puesto || 'No asignado'}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-table"></i> Mesa
+                        </div>
+                        <div class="info-value ${!data.mesa ? 'info-value-empty' : ''}">${data.mesa || 'No asignada'}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        resultCard.style.display = 'block';
+    }, 300);
+}
+
+// Función para volver a buscar
+function backToSearch() {
+    const searchCard = document.getElementById('searchCard');
+    const resultCard = document.getElementById('resultCard');
+    const searchBtn = document.getElementById('searchBtn');
+    const nitInput = document.getElementById('nitInput');
+    
+    // Ocultar resultados
+    resultCard.classList.add('fade-out');
+    
+    setTimeout(() => {
+        resultCard.style.display = 'none';
+        resultCard.classList.remove('fade-out');
+        
+        // Mostrar búsqueda
+        searchCard.style.display = 'block';
+        searchCard.classList.remove('fade-out');
+        searchCard.classList.add('fade-in');
+        
+        // Resetear formulario
+        nitInput.value = '';
+        searchBtn.disabled = false;
+        searchBtn.innerHTML = `
+            <div class="button-content">
+                <i class="fas fa-search"></i>
+                <span>Consultar</span>
+            </div>
+        `;
+        document.getElementById('errorMessage').style.display = 'none';
+        
+        // Focus en el input
+        nitInput.focus();
+    }, 300);
+}
+
+// Formatear fecha
+function formatDate(dateString) {
+    if (!dateString) return 'N/A';
+    
+    // Formato: "15 11 2025 01 59 35" → "15/11/2025 01:59:35"
+    const parts = dateString.split(' ');
+    if (parts.length === 6) {
+        const [day, month, year, hour, min, sec] = parts;
+        return `${day}/${month}/${year} ${hour}:${min}:${sec}`;
+    }
+    
+    return dateString;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,245 @@
+{% extends 'shared/layout.html' %} 
+{% load static %} 
+
+{% block title %}Progreso Electoral{% endblock %} 
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">Progreso Electoral</h1>
+        <p class="dashboard-subtitle">Estadísticas de Registro por Municipio</p>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loadingState" class="loading-container">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Cargando estadísticas...</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorState" class="error-container" style="display: none;">
+        <i class="fas fa-exclamation-triangle error-icon"></i>
+        <h3 class="error-title">Error al Cargar Datos</h3>
+        <p class="error-message" id="errorMessage">No se pudieron cargar las estadísticas.</p>
+        <button class="retry-button" onclick="loadStatistics()">
+            <i class="fas fa-sync-alt"></i> Reintentar
+        </button>
+    </div>
+
+    <!-- Grid de Tacómetros -->
+    <div id="speedometersGrid" class="speedometers-grid" style="display: none;"></div>
+</div>
+{% endblock %} 
+
+{% block scripts %}
+<script>
+// Configuración de colores
+const COLORS = {
+    danger: '#dc2626',   // Rojo
+    warning: '#f59e0b',  // Amarillo
+    success: '#10b981'   // Verde
+};
+
+/**
+ * Determina el color y estado según los registrados y la meta
+ * Rojo: 0 - 50% de la meta
+ * Amarillo: 50% - 99.99% de la meta
+ * Verde: 100% o más de la meta
+ */
+function getColorAndStatus(registrados, meta) {
+    const percentage = (registrados / meta) * 100;
+    const halfMeta = meta * 0.5;
+    
+    if (registrados < halfMeta) {
+        // Menos de la mitad de la meta
+        return { color: COLORS.danger, status: 'danger', label: 'Crítico' };
+    } else if (registrados < meta) {
+        // Entre la mitad y la meta
+        return { color: COLORS.warning, status: 'warning', label: 'En Progreso' };
+    } else {
+        // Meta alcanzada o superada
+        return { color: COLORS.success, status: 'success', label: 'Cumplido' };
+    }
+}
+
+function createSpeedometer(registrados, meta) {
+    const percentage = Math.min((registrados / meta) * 100, 100);
+    const { color } = getColorAndStatus(registrados, meta);
+    
+    // Configuración del tacómetro
+    const radius = 80;
+    const strokeWidth = 18;
+    const circumference = 2 * Math.PI * radius;
+    const dashOffset = circumference - (percentage / 100) * circumference;
+    
+    return `
+        <svg class="speedometer-svg" viewBox="0 0 200 200">
+            <!-- Sombra externa -->
+            <circle cx="100" cy="100" r="90" 
+                    fill="none" 
+                    stroke="#e5e7eb" 
+                    stroke-width="2" 
+                    opacity="0.3"/>
+            
+            <!-- Fondo del tacómetro (gris) -->
+            <circle cx="100" cy="100" r="${radius}" 
+                    fill="none" 
+                    stroke="#f3f4f6" 
+                    stroke-width="${strokeWidth}"
+                    stroke-linecap="round"/>
+            
+            <!-- Gradiente para efecto 3D -->
+            <defs>
+                <linearGradient id="speedGradient-${registrados}-${meta}" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:${color};stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:${color};stop-opacity:0.7" />
+                </linearGradient>
+                
+                <!-- Filtro de sombra -->
+                <filter id="shadow-${registrados}-${meta}">
+                    <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+                    <feOffset dx="0" dy="2" result="offsetblur"/>
+                    <feComponentTransfer>
+                        <feFuncA type="linear" slope="0.3"/>
+                    </feComponentTransfer>
+                    <feMerge>
+                        <feMergeNode/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            
+            <!-- Barra de progreso con gradiente -->
+            <circle cx="100" cy="100" r="${radius}" 
+                    fill="none" 
+                    stroke="url(#speedGradient-${registrados}-${meta})" 
+                    stroke-width="${strokeWidth}"
+                    stroke-linecap="round"
+                    stroke-dasharray="${circumference}"
+                    stroke-dashoffset="${dashOffset}"
+                    filter="url(#shadow-${registrados}-${meta})"
+                    style="transition: stroke-dashoffset 1.5s ease-out;">
+                <animate attributeName="stroke-dashoffset" 
+                         from="${circumference}" 
+                         to="${dashOffset}" 
+                         dur="1.5s" 
+                         fill="freeze"/>
+            </circle>
+            
+            <!-- Círculo interior decorativo -->
+            <circle cx="100" cy="100" r="65" 
+                    fill="none" 
+                    stroke="${color}" 
+                    stroke-width="1" 
+                    opacity="0.2"/>
+        </svg>
+    `;
+}
+
+function createSpeedometerCard(data) {
+    const { cod_depto, nom_depto, cod_municipio, nom_municipio, meta, registrados } = data;
+    const percentage = Math.min((registrados / meta) * 100, 100).toFixed(1);
+    const { color, status, label } = getColorAndStatus(registrados, meta);
+    
+    return `
+        <div class="speedometer-card animate-fadeIn">
+            <div class="speedometer-container">
+                ${createSpeedometer(registrados, meta)}
+                <div class="percentage-label">
+                    <div style="color: ${color};">
+                        <span class="percentage-number">${percentage}</span><span class="percentage-symbol">%</span>
+                    </div>
+                    <div class="percentage-text">Progreso</div>
+                </div>
+            </div>
+            
+            <div class="municipality-info">
+                <h3 class="municipality-name">${nom_municipio}</h3>
+                <p class="department-name">${nom_depto}</p>
+                
+                <div class="progress-info">
+                    <span class="progress-numbers">
+                        <span class="progress-current" style="color: ${color};">${registrados.toLocaleString()}</span>
+                        <span class="progress-separator">/</span>
+                        <span class="progress-meta">${meta.toLocaleString()}</span>
+                    </span>
+                </div>
+                
+                <span class="status-badge status-${status}">
+                    <i class="fas ${status === 'success' ? 'fa-check-circle' : status === 'warning' ? 'fa-exclamation-circle' : 'fa-times-circle'}"></i>
+                    ${label}
+                </span>
+            </div>
+        </div>
+    `;
+}
+
+async function loadStatistics() {
+    const loadingState = document.getElementById('loadingState');
+    const errorState = document.getElementById('errorState');
+    const speedometersGrid = document.getElementById('speedometersGrid');
+    
+    // Mostrar loading
+    loadingState.style.display = 'block';
+    errorState.style.display = 'none';
+    speedometersGrid.style.display = 'none';
+    
+    try {
+        console.log('Iniciando carga de estadísticas...');
+        const response = await fetch('/estadisticas/get_estados_municipios');
+        
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        console.log('Respuesta recibida, parseando JSON...');
+        let data = await response.json();
+        console.log('Tipo de data:', typeof data);
+        console.log('Data raw:', data);
+        
+        // Si la respuesta es un string JSON, parsearlo nuevamente
+        if (typeof data === 'string') {
+            console.log('Data es string, parseando nuevamente...');
+            data = JSON.parse(data);
+            console.log('Data después de parsear:', data);
+        }
+        
+        // Validar que hay datos
+        if (!data || !Array.isArray(data) || data.length === 0) {
+            console.error('Validación falló - data:', data, 'Es array:', Array.isArray(data));
+            throw new Error('No se encontraron datos de municipios');
+        }
+        
+        console.log(`✅ Se encontraron ${data.length} municipios`);
+        
+        // Ocultar loading y mostrar grid
+        loadingState.style.display = 'none';
+        speedometersGrid.style.display = 'grid';
+        
+        // Agregar atributo data-count para centrar cuando hay pocas tarjetas
+        speedometersGrid.setAttribute('data-count', data.length);
+        
+        // Generar tarjetas
+        speedometersGrid.innerHTML = data.map(municipality => 
+            createSpeedometerCard(municipality)
+        ).join('');
+        
+    } catch (error) {
+        console.error('Error al cargar estadísticas:', error);
+        
+        // Mostrar error
+        loadingState.style.display = 'none';
+        errorState.style.display = 'block';
+        
+        document.getElementById('errorMessage').textContent = 
+            error.message || 'No se pudieron cargar las estadísticas. Por favor, intente nuevamente.';
+    }
+}
+
+// Cargar estadísticas al iniciar
+document.addEventListener('DOMContentLoaded', loadStatistics);
+
+// Recargar cada 5 minutos (300000 ms)
+setInterval(loadStatistics, 300000);
+</script>
+{% endblock %}

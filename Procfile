@@ -1,0 +1,1 @@
+web: gunicorn soft700.wsgi

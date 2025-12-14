@@ -1,0 +1,21 @@
+from django.urls import path, include
+from apps.core import views
+from apps.core.custom_views import usuarios_views, estadisticas_views, listas_views, dashboard_view, consultar_views
+
+urlpatterns = [
+    path('consultas/search_votante/', consultar_views.search),
+    path('listas/', listas_views.index, name='listas'),
+    path('dashboard/', dashboard_view.index, name='dashboard'),
+    path('consultas/', consultar_views.index, name='consultas'),
+    path('estadisticas/', estadisticas_views.index, name='estadisticas'),
+    path('estadisticas/get_estados_municipios', estadisticas_views.est_municipios_view, name='get_estados_municipios'),
+    path('usuarios/create/', usuarios_views.create, name='usuarios_create'),
+    path('usuarios/', usuarios_views.index, name='usuarios'),
+    path('index/', views.index, name='index'),
+    path('exportar_lista/', views.exportar_votantes, name='exportar_lista'),
+    path('login/', views.sign_in, name='login'),
+    path('logout/', views.sign_out, name='logout'),
+    path('votante/create/', views.registrar_votante, name='save_votante'),
+    path('votante/update/<int:pk>/', views.editar_votante, name='votante_update'),
+    path('', views.sign_in, name='login'),
+]

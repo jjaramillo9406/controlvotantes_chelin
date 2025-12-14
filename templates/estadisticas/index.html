@@ -1,0 +1,376 @@
+{% extends 'shared/layout.html' %} 
+{% load static %} 
+{% load humanize %} 
+{% load mathfilters %} 
+
+{% block title %}Estadísticas{% endblock %} 
+{% block content %}
+<div class="w-full max-w-screen-2xl mx-auto px-4">
+  <!-- Header Card -->
+  <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-6 w-full">
+    <div class="gradient-header px-6 py-4">
+      <div class="flex items-center justify-between flex-wrap gap-4">
+        <div class="flex items-center space-x-3">
+          <div class="bg-white rounded-full p-2">
+            <i class="fas fa-chart-simple icon-institucional text-2xl"></i>
+          </div>
+          <h1 class="text-2xl font-bold text-white">Estadísticas</h1>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenedor de búsqueda y tabla -->
+    <div class="p-6">
+      <!-- Barra superior con buscador -->
+      <div
+        class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4"
+      >
+        <!-- Buscador -->
+        <div class="search-container mb-0 flex-1">
+          <div class="relative">
+            <i class="fas fa-search search-icon"></i>
+            <input
+              type="text"
+              id="searchInput"
+              class="search-input"
+              placeholder="Buscar por nombre o identificación..."
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla -->
+      <div class="custom-table-container">
+        <table class="custom-table" id="estadisticasTable">
+          <thead>
+            <tr>
+              <th class="sortable" data-column="0" data-type="text">
+                Identificación
+                <span class="sort-icon">
+                  <i class="fas fa-caret-up"></i>
+                  <i class="fas fa-caret-down"></i>
+                </span>
+              </th>
+              <th class="sortable" data-column="1" data-type="text">
+                Nombres
+                <span class="sort-icon">
+                  <i class="fas fa-caret-up"></i>
+                  <i class="fas fa-caret-down"></i>
+                </span>
+              </th>
+              <th class="sortable" data-column="2" data-type="text">
+                Apellidos
+                <span class="sort-icon">
+                  <i class="fas fa-caret-up"></i>
+                  <i class="fas fa-caret-down"></i>
+                </span>
+              </th>
+              <th class="sortable" data-column="3" data-type="text">
+                Municipio
+                <span class="sort-icon">
+                  <i class="fas fa-caret-up"></i>
+                  <i class="fas fa-caret-down"></i>
+                </span>
+              </th>
+              <th class="sortable" data-column="4" data-type="date">
+                Último registro
+                <span class="sort-icon">
+                  <i class="fas fa-caret-up"></i>
+                  <i class="fas fa-caret-down"></i>
+                </span>
+              </th>
+              <th class="sortable" data-column="5" data-type="number">
+                Meta electoral
+                <span class="sort-icon">
+                  <i class="fas fa-caret-up"></i>
+                  <i class="fas fa-caret-down"></i>
+                </span>
+              </th>
+              <th class="sortable" data-column="6" data-type="number">
+                Registrados
+                <span class="sort-icon">
+                  <i class="fas fa-caret-up"></i>
+                  <i class="fas fa-caret-down"></i>
+                </span>
+              </th>
+              <th class="sortable" data-column="7" data-type="number">
+                Zonificados
+                <span class="sort-icon">
+                  <i class="fas fa-caret-up"></i>
+                  <i class="fas fa-caret-down"></i>
+                </span>
+              </th>
+              <th class="sortable" data-column="8" data-type="number">
+                Asistieron
+                <span class="sort-icon">
+                  <i class="fas fa-caret-up"></i>
+                  <i class="fas fa-caret-down"></i>
+                </span>
+              </th>
+              <th class="sortable" data-column="9" data-type="number">
+                Pendientes
+                <span class="sort-icon">
+                  <i class="fas fa-caret-up"></i>
+                  <i class="fas fa-caret-down"></i>
+                </span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in estadisticas %}
+            <tr>
+              <td class="text-center">{{ item.identificacion }}</td>
+              <td class="text-center">{{ item.nombres }}</td>
+              <td class="text-center">{{ item.apellidos }}</td>
+              <td class="text-center">{{ item.municipio }}</td>
+              <td
+                class="text-center"
+                data-timestamp="{% if item.ultimo_registro %}{{ item.ultimo_registro|date:'U' }}{% else %}0{% endif %}"
+              >
+                {{ item.ultimo_registro|date:"d/m/Y H:i"|default_if_none:"N/A" }}
+              </td>
+              <td class="text-center" data-value="{{ item.meta }}">
+                {{ item.meta }}
+              </td>
+              <td class="text-center" data-value="{{ item.registrados }}">
+                {{ item.registrados }}
+              </td>
+              <td class="text-center" data-value="{{ item.zonificados }}">
+                {{ item.zonificados }}
+              </td>
+              <td class="text-center" data-value="{{ item.asistieron }}">
+                {{ item.asistieron }}
+              </td>
+              <td class="text-center" data-value="{{ item.pendientes }}">
+                {% if item.pendientes > item.media %}
+                <span class="badge-danger">{{ item.pendientes }}</span>
+                {% elif item.pendientes > 0 and item.pendientes <= item.media %}
+                <span class="badge-warning">{{ item.pendientes }}</span>
+                {% elif item.pendientes == 0 %}
+                <span class="badge-success">{{ item.pendientes }}</span>
+                {% elif item.pendientes < 0 %}
+                <span class="badge-success">+{{ item.pendientes|abs }}</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mensaje cuando no hay resultados -->
+      <div id="noResults" class="hidden text-center py-8 text-gray-500">
+        <i class="fas fa-search text-4xl mb-3 text-gray-300"></i>
+        <p class="text-lg font-medium">No se encontraron resultados</p>
+        <p class="text-sm">Intenta con otro término de búsqueda</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Cards en Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <!-- Card Info Total -->
+    <div class="alert-institucional rounded-lg p-4 shadow-md">
+      <div class="flex items-start space-x-3">
+        <i class="fas fa-users icon-institucional text-xl mt-0.5"></i>
+        <div>
+          <p class="text-sm text-gray-800">
+            <span class="font-semibold">Meta electoral:</span>
+            <span class="text-lg font-bold" id="totalCount"
+              >{{ meta_electoral|intcomma }}</span
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="bg-purple-50 border-l-4 border-purple-400 rounded-lg p-4 shadow-md"
+    >
+      <div class="flex items-start space-x-3">
+        <i class="fas fa-filter text-purple-500 text-xl mt-0.5"></i>
+        <div>
+          <p class="text-sm text-purple-800">
+            <span class="font-semibold">Total personas registradas:</span>
+            <span class="text-lg font-bold" id="visibleCount"
+              >{{ total_registrados|intcomma }}</span
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card Leyenda -->
+    <div
+      class="bg-green-50 border-l-4 border-green-400 rounded-lg p-4 shadow-md"
+    >
+      <div class="flex items-start space-x-3">
+        <i class="fas fa-info-circle text-green-500 text-xl mt-0.5"></i>
+        <div class="text-sm text-green-800">
+          <p class="font-semibold mb-1">Leyenda:</p>
+          <p>
+            <span class="badge-success text-xs">Verde</span> = Meta cumplida
+          </p>
+          <p>
+            <span class="badge-warning text-xs">Amarillo</span> = Debajo de la
+            media
+          </p>
+          <p><span class="badge-danger text-xs">Rojo</span> = Muy por debajo</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-blue-50 border-l-4 border-blue-400 rounded-lg p-4 shadow-md">
+    <div class="flex items-start space-x-3">
+        <i class="fas fa-map-marker-alt text-blue-500 text-xl mt-0.5"></i>
+        <div class="w-full">
+            <p class="text-sm font-semibold text-blue-800 mb-2">Total Personas por Municipio</p>
+            <div class="overflow-auto">
+                <table class="w-full table-auto">
+                    <tbody class="divide-y divide-transparent">
+                        {% for municipio in municipios %}
+                        <tr>
+                            <td class="text-sm text-blue-800 w-1/2">{{ municipio.nom_municipio }}:</td>
+                            <td class="text-sm text-blue-800 font-bold">
+                                {{ municipio.registrados|intcomma }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+  </div>
+</div>
+{% endblock %} {% block scripts %}
+<script>
+  // Sistema de búsqueda y ordenamiento (sin paginación)
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("searchInput");
+    const table = document.getElementById("estadisticasTable");
+    const tbody = table.querySelector("tbody");
+    const allRows = Array.from(tbody.querySelectorAll("tr"));
+    const noResults = document.getElementById("noResults");
+    const tableContainer = table.parentElement;
+    const visibleCount = document.getElementById("visibleCount");
+
+    // Elementos de ordenamiento
+    const sortableHeaders = table.querySelectorAll("th.sortable");
+
+    let filteredRows = [...allRows];
+    let currentSort = { column: null, direction: null };
+
+    // ✅ AJUSTE: Orden asc/desc corregido
+    function sortRows(columnIndex, dataType) {
+      const headers = Array.from(sortableHeaders);
+      const clickedHeader = headers.find(
+        (h) => parseInt(h.dataset.column) === columnIndex
+      );
+
+      // Alternar dirección (solo asc/desc)
+      if (currentSort.column === columnIndex) {
+        currentSort.direction =
+          currentSort.direction === "asc" ? "desc" : "asc";
+      } else {
+        currentSort.column = columnIndex;
+        currentSort.direction = "asc";
+      }
+
+      // Actualizar clases visuales
+      headers.forEach((h) => h.classList.remove("sort-asc", "sort-desc"));
+      clickedHeader.classList.add(`sort-${currentSort.direction}`);
+
+      // Ordenar las filas filtradas
+      filteredRows.sort((a, b) => {
+        let aValue, bValue;
+
+        if (dataType === "date") {
+          const aCells = a.querySelectorAll("td");
+          const bCells = b.querySelectorAll("td");
+          aValue =
+            parseInt(aCells[columnIndex].dataset.timestamp || "0", 10) || 0;
+          bValue =
+            parseInt(bCells[columnIndex].dataset.timestamp || "0", 10) || 0;
+        } else if (dataType === "number") {
+          const aCells = a.querySelectorAll("td");
+          const bCells = b.querySelectorAll("td");
+          aValue = parseFloat(aCells[columnIndex].dataset.value) || 0;
+          bValue = parseFloat(bCells[columnIndex].dataset.value) || 0;
+        } else {
+          const aCells = a.querySelectorAll("td");
+          const bCells = b.querySelectorAll("td");
+          aValue = aCells[columnIndex].textContent.trim().toLowerCase();
+          bValue = bCells[columnIndex].textContent.trim().toLowerCase();
+
+          const aNum = parseFloat(aValue.replace(/\./g, "").replace(",", "."));
+          const bNum = parseFloat(bValue.replace(/\./g, "").replace(",", "."));
+          if (!isNaN(aNum) && !isNaN(bNum)) {
+            aValue = aNum;
+            bValue = bNum;
+          }
+        }
+
+        if (aValue < bValue) return currentSort.direction === "asc" ? -1 : 1;
+        if (aValue > bValue) return currentSort.direction === "asc" ? 1 : -1;
+        return 0;
+      });
+
+      // ✅ Reinsertar las filas ordenadas al tbody
+      tbody.innerHTML = "";
+      filteredRows.forEach((row) => tbody.appendChild(row));
+
+      renderTable();
+    }
+
+    // Event listeners para headers ordenables
+    sortableHeaders.forEach((header) => {
+      header.addEventListener("click", function () {
+        const columnIndex = parseInt(this.dataset.column);
+        const dataType = this.dataset.type;
+        sortRows(columnIndex, dataType);
+      });
+    });
+
+    // Función para renderizar la tabla
+    function renderTable() {
+      allRows.forEach((row) => (row.style.display = "none"));
+      filteredRows.forEach((row) => (row.style.display = ""));
+
+      if (filteredRows.length === 0) {
+        tableContainer.classList.add("hidden");
+        noResults.classList.remove("hidden");
+        visibleCount.textContent = "0";
+      } else {
+        tableContainer.classList.remove("hidden");
+        noResults.classList.add("hidden");
+        //visibleCount.textContent = filteredRows.length;
+      }
+    }
+
+    // Búsqueda
+    searchInput.addEventListener("keyup", function () {
+      const searchTerm = this.value.toLowerCase().trim();
+
+      filteredRows = allRows.filter((row) => {
+        const text = row.textContent.toLowerCase();
+        return text.includes(searchTerm);
+      });
+
+      // Mantener orden actual si lo hay
+      if (currentSort.column !== null && currentSort.direction) {
+        sortRows(
+          currentSort.column,
+          sortableHeaders[currentSort.column].dataset.type
+        );
+      } else {
+        renderTable();
+      }
+    });
+
+    // Render inicial
+    renderTable();
+  });
+</script>
+{% endblock %}
