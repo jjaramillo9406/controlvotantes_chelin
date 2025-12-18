@@ -8,8 +8,8 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    /* https://grabient.com/HQJgjAnANMEBzWAVgMwppA7DTKAsMEYAbBktqGBSHHFCMsQSskgAxR7CZhxA?style=angularSwatches&steps=13&angle=45 */
-    background: conic-gradient(from 45deg, rgba(10, 74, 89, 1.000) 0.000deg, rgba(10, 74, 89, 1.000) 27.692deg, rgba(11, 82, 124, 1.000) 27.692deg, rgba(11, 82, 124, 1.000) 55.385deg, rgba(13, 92, 159, 1.000) 55.385deg, rgba(13, 92, 159, 1.000) 83.077deg, rgba(16, 104, 194, 1.000) 83.077deg, rgba(16, 104, 194, 1.000) 110.769deg, rgba(18, 118, 227, 1.000) 110.769deg, rgba(18, 118, 227, 1.000) 138.462deg, rgba(21, 133, 255, 1.000) 138.462deg, rgba(21, 133, 255, 1.000) 166.154deg, rgba(24, 150, 255, 1.000) 166.154deg, rgba(24, 150, 255, 1.000) 193.846deg, rgba(28, 169, 255, 1.000) 193.846deg, rgba(28, 169, 255, 1.000) 221.538deg, rgba(31, 188, 255, 1.000) 221.538deg, rgba(31, 188, 255, 1.000) 249.231deg, rgba(35, 209, 255, 1.000) 249.231deg, rgba(35, 209, 255, 1.000) 276.923deg, rgba(39, 230, 255, 1.000) 276.923deg, rgba(39, 230, 255, 1.000) 304.615deg, rgba(43, 251, 255, 1.000) 304.615deg, rgba(43, 251, 255, 1.000) 332.308deg, rgba(47, 255, 255, 1.000) 332.308deg 360.000deg);
+    /* Gradiente azul y blanco del partido */
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #ffffff 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -90,14 +90,14 @@ body {
 .input-wrapper input:focus,
 .input-wrapper input:valid,
 .input-wrapper input.has-value {
-    border-color: #6366f1 !important;
+    border-color: #2563eb !important;
 }
 
 .input-wrapper input:focus + label,
 .input-wrapper input:valid + label,
 .input-wrapper input.has-value + label {
     transform: translateY(-8px) scale(0.875);
-    color: #6366f1;
+    color: #2563eb;
     font-weight: 500;
 }
 
@@ -209,8 +209,8 @@ body {
 }
 
 .remember-wrapper input[type="checkbox"]:checked ~ .checkbox-label .checkmark {
-    background: #6366f1;
-    border-color: #6366f1;
+    background: #2563eb;
+    border-color: #2563eb;
 }
 
 .remember-wrapper input[type="checkbox"]:checked ~ .checkbox-label .checkmark::after {
@@ -221,7 +221,7 @@ body {
 }
 
 .forgot-password {
-    color: #6366f1;
+    color: #2563eb;
     text-decoration: none;
     font-size: 0.875rem;
     font-weight: 500;
@@ -229,13 +229,13 @@ body {
 }
 
 .forgot-password:hover {
-    color: #4f46e5;
+    color: #1e40af;
 }
 
 /* Button */
 .login-btn {
     width: 100%;
-    background: #6366f1;
+    background: #2563eb;
     border: none;
     border-radius: 8px;
     padding: 12px 24px;
@@ -249,7 +249,7 @@ body {
 }
 
 .login-btn:hover {
-    background: #4f46e5;
+    background: #1e40af;
 }
 
 .login-btn:active {
@@ -259,7 +259,7 @@ body {
 /* Loading State */
 .login-btn.loading {
     pointer-events: none;
-    background: #a5a6f6;
+    background: #93c5fd;
 }
 
 .btn-text {
@@ -300,14 +300,14 @@ body {
 }
 
 .signup-link a {
-    color: #6366f1;
+    color: #2563eb;
     text-decoration: none;
     font-weight: 500;
     transition: color 0.2s ease;
 }
 
 .signup-link a:hover {
-    color: #4f46e5;
+    color: #1e40af;
 }
 
 /* Success Message */

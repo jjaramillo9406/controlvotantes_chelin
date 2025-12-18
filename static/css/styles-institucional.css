@@ -1,21 +1,21 @@
 /* ============================================
-   VARIABLES DE COLOR - TEMA INSTITUCIONAL ROJO-NARANJA-AMARILLO
+   VARIABLES DE COLOR - TEMA INSTITUCIONAL AZUL Y BLANCO
    ============================================ */
 :root {
-  /* Rojos principales */
-  --primary-red: #dc2626;
-  --primary-red-light: #ef4444;
-  --primary-red-dark: #991b1b;
+  /* Azules principales */
+  --primary-blue: #1e40af;
+  --primary-blue-light: #3b82f6;
+  --primary-blue-dark: #1e3a8a;
 
-  /* Naranjas secundarios */
-  --secondary-orange: #f97316;
-  --secondary-orange-light: #fb923c;
-  --secondary-orange-dark: #c2410c;
+  /* Azules secundarios */
+  --secondary-blue: #2563eb;
+  --secondary-blue-light: #60a5fa;
+  --secondary-blue-dark: #1d4ed8;
 
-  /* Amarillos de acento */
-  --accent-yellow: #fbbf24;
-  --accent-yellow-light: #fcd34d;
-  --accent-yellow-dark: #f59e0b;
+  /* Blancos y azules claros de acento */
+  --accent-white: #ffffff;
+  --accent-blue-light: #dbeafe;
+  --accent-blue-lighter: #eff6ff;
 
   /* Blancos y grises */
   --white: #ffffff;
@@ -38,39 +38,39 @@
   --danger: #ef4444;
   --danger-light: #f87171;
 
-  /* Gradientes institucionales */
+  /* Gradientes institucionales azul y blanco */
   --gradient-primary: linear-gradient(
     135deg,
-    var(--primary-red) 0%,
-    var(--secondary-orange) 50%,
-    var(--accent-yellow) 100%
+    var(--primary-blue) 0%,
+    var(--secondary-blue) 50%,
+    var(--accent-white) 100%
   );
   --gradient-header: linear-gradient(
     135deg,
-    var(--primary-red-dark) 0%,
-    var(--primary-red) 30%,
-    var(--secondary-orange) 70%,
-    var(--accent-yellow) 100%
+    var(--primary-blue-dark) 0%,
+    var(--primary-blue) 30%,
+    var(--secondary-blue) 70%,
+    var(--secondary-blue-light) 100%
   );
   --gradient-button: linear-gradient(
     135deg,
-    var(--primary-red) 0%,
-    var(--secondary-orange) 100%
+    var(--primary-blue) 0%,
+    var(--secondary-blue) 100%
   );
   --gradient-button-hover: linear-gradient(
     135deg,
-    var(--primary-red-dark) 0%,
-    var(--secondary-orange-dark) 100%
+    var(--primary-blue-dark) 0%,
+    var(--secondary-blue-dark) 100%
   );
 
-  /* Sombras con tonos cálidos */
-  --shadow-sm: 0 1px 2px 0 rgba(220, 38, 38, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(220, 38, 38, 0.1),
-    0 2px 4px -1px rgba(220, 38, 38, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(220, 38, 38, 0.1),
-    0 4px 6px -2px rgba(220, 38, 38, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(220, 38, 38, 0.1),
-    0 10px 10px -5px rgba(220, 38, 38, 0.04);
+  /* Sombras con tonos azules */
+  --shadow-sm: 0 1px 2px 0 rgba(30, 64, 175, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(30, 64, 175, 0.1),
+    0 2px 4px -1px rgba(30, 64, 175, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(30, 64, 175, 0.1),
+    0 4px 6px -2px rgba(30, 64, 175, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(30, 64, 175, 0.1),
+    0 10px 10px -5px rgba(30, 64, 175, 0.04);
 
   /* Transiciones */
   --transition-fast: 150ms ease-in-out;
@@ -195,8 +195,8 @@ body {
 .custom-table thead th.sort-asc .sort-icon .fa-caret-up,
 .custom-table thead th.sort-desc .sort-icon .fa-caret-down {
   opacity: 1;
-  color: var(--accent-yellow-light);
-  text-shadow: 0 0 4px rgba(252, 211, 77, 0.8);
+  color: var(--accent-white);
+  text-shadow: 0 0 4px rgba(219, 234, 254, 0.8);
 }
 
 .custom-table thead th.sort-asc .sort-icon,
@@ -230,12 +230,12 @@ body {
 .custom-table tbody tr:hover {
   background: linear-gradient(
     90deg,
-    rgba(220, 38, 38, 0.05) 0%,
-    rgba(249, 115, 22, 0.05) 50%,
-    rgba(251, 191, 36, 0.05) 100%
+    rgba(30, 64, 175, 0.05) 0%,
+    rgba(37, 99, 235, 0.05) 50%,
+    rgba(96, 165, 250, 0.05) 100%
   );
   transform: scale(1.002);
-  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.15);
+  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.15);
 }
 
 .custom-table tbody td {
@@ -272,8 +272,8 @@ body {
 
 .search-input:focus {
   outline: none;
-  border-color: var(--secondary-orange);
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+  border-color: var(--secondary-blue);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
   background-color: var(--white);
 }
 
@@ -333,7 +333,7 @@ body {
 .page-btn:hover:not(:disabled) {
   background: var(--gradient-button);
   color: var(--white);
-  border-color: var(--primary-red);
+  border-color: var(--primary-blue);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
@@ -341,7 +341,7 @@ body {
 .page-btn.active {
   background: var(--gradient-button);
   color: var(--white);
-  border-color: var(--primary-red);
+  border-color: var(--primary-blue);
   font-weight: 600;
   box-shadow: var(--shadow-md);
 }
@@ -363,7 +363,7 @@ body {
   color: var(--gray-700);
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg fill='%23dc2626' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%231e40af' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
   background-repeat: no-repeat;
   background-position: right 0.5rem center;
   background-size: 1rem;
@@ -371,13 +371,13 @@ body {
 }
 
 .page-size-select:hover {
-  border-color: var(--secondary-orange);
+  border-color: var(--secondary-blue);
 }
 
 .page-size-select:focus {
   outline: none;
-  border-color: var(--secondary-orange);
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+  border-color: var(--secondary-blue);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 /* ============================================
@@ -408,8 +408,8 @@ input[type="password"]:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: var(--secondary-orange);
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+  border-color: var(--secondary-blue);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 input[type="text"].error,
@@ -439,13 +439,13 @@ textarea {
 
 .form-control:focus {
   outline: none !important;
-  border-color: var(--secondary-orange) !important;
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15) !important;
+  border-color: var(--secondary-blue) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
 }
 
 select.form-control {
   appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg fill='%23dc2626' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%231e40af' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   background-size: 1.25rem;
@@ -455,7 +455,7 @@ select.form-control {
 }
 
 select.form-control:hover {
-  border-color: var(--secondary-orange-light) !important;
+  border-color: var(--secondary-blue-light) !important;
 }
 
 select.form-control option {
@@ -467,7 +467,7 @@ select.form-control option {
 }
 
 select.form-control option:checked {
-  background-color: var(--primary-red);
+  background-color: var(--primary-blue);
   color: var(--white);
   font-weight: 600;
 }
@@ -576,15 +576,15 @@ select.form-control option:checked {
 
 /* Utilidad para iconos con color institucional */
 .icon-institucional {
-  color: var(--primary-red);
+  color: var(--primary-blue);
 }
 
 .icon-institucional-light {
-  color: var(--secondary-orange);
+  color: var(--secondary-blue);
 }
 
 .icon-institucional-accent {
-  color: var(--accent-yellow-dark);
+  color: var(--accent-white);
 }
 
 /* ============================================
@@ -611,11 +611,11 @@ select.form-control option:checked {
 .alert-institucional {
   background: linear-gradient(
     90deg,
-    rgba(220, 38, 38, 0.1) 0%,
-    rgba(249, 115, 22, 0.1) 50%,
-    rgba(251, 191, 36, 0.1) 100%
+    rgba(30, 64, 175, 0.1) 0%,
+    rgba(37, 99, 235, 0.1) 50%,
+    rgba(96, 165, 250, 0.1) 100%
   );
-  border-left: 4px solid var(--primary-red);
+  border-left: 4px solid var(--primary-blue);
 }
 
 /* ============================================
@@ -687,19 +687,19 @@ select.form-control option:checked {
    UTILIDADES ADICIONALES
    ============================================ */
 .text-institucional {
-  color: var(--primary-red);
+  color: var(--primary-blue);
 }
 
 .text-institucional-light {
-  color: var(--secondary-orange);
+  color: var(--secondary-blue);
 }
 
 .text-institucional-accent {
-  color: var(--accent-yellow-dark);
+  color: var(--accent-white);
 }
 
 .border-institucional {
-  border-color: var(--primary-red);
+  border-color: var(--primary-blue);
 }
 
 .bg-institucional {
@@ -707,11 +707,11 @@ select.form-control option:checked {
 }
 
 .shadow-institucional {
-  box-shadow: 0 4px 14px 0 rgba(220, 38, 38, 0.39);
+  box-shadow: 0 4px 14px 0 rgba(30, 64, 175, 0.39);
 }
 
 .hover-shadow-institucional:hover {
-  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+  box-shadow: 0 6px 20px rgba(30, 64, 175, 0.4);
 }
 /* ============================================
    DASHBOARD - ESTILOS PARA TACÓMETROS
@@ -792,7 +792,7 @@ select.form-control option:checked {
 .speedometer-card:hover {
   transform: translateY(-5px);
   box-shadow: var(--shadow-xl);
-  border-color: var(--secondary-orange);
+  border-color: var(--secondary-blue);
 }
 
 /* Contenedor del SVG Tacómetro */
@@ -847,7 +847,7 @@ select.form-control option:checked {
 }
 
 .progress-current {
-  color: var(--primary-red);
+  color: var(--primary-blue);
 }
 
 .progress-separator {
@@ -940,7 +940,7 @@ select.form-control option:checked {
   width: 60px;
   height: 60px;
   border: 5px solid var(--gray-200);
-  border-top: 5px solid var(--primary-red);
+  border-top: 5px solid var(--primary-blue);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 1.5rem;
@@ -1196,8 +1196,8 @@ select.form-control option:checked {
 
 .form-input:focus {
   outline: none;
-  border-color: var(--secondary-orange);
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+  border-color: var(--secondary-blue);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .form-input::placeholder {
@@ -1373,7 +1373,7 @@ select.form-control option:checked {
   background: var(--gray-50);
   padding: 1rem;
   border-radius: 0.5rem;
-  border-left: 4px solid var(--secondary-orange);
+  border-left: 4px solid var(--secondary-blue);
   transition: all var(--transition-normal);
 }
 
