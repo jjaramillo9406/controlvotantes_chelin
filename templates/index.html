@@ -1,422 +1,427 @@
-{% extends 'shared/layout.html' %}
-{% load static %}
+{% extends 'shared/layout.html' %} {% load static %} {% block title %}Mis
+Votantes{% endblock %} {% block content %}
+<div class="max-w-7xl mx-auto">
+  <!-- Header Card -->
+  <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-6">
+    <div class="gradient-header px-6 py-4">
+      <div class="flex items-center justify-between flex-wrap gap-4">
+        <div class="flex items-center space-x-3">
+          <div class="bg-white rounded-full p-2">
+            <i class="fas fa-user-circle icon-institucional text-2xl"></i>
+          </div>
+          <h1 class="text-2xl font-bold text-white">Mis votantes</h1>
+        </div>
+        <div class="flex gap-2">
+          <a
+            href="{% url 'exportar_lista' %}"
+            class="inline-flex items-center space-x-2 bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+          >
+            <i class="fas fa-file-excel"></i>
+            <span>Exportar</span>
+          </a>
+          <a
+            href="{% url 'save_votante' %}"
+            class="inline-flex items-center space-x-2 bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+          >
+            <i class="fas fa-plus-circle"></i>
+            <span>Agregar</span>
+          </a>
+        </div>
+      </div>
+    </div>
 
-{% block title %}Mis Votantes{% endblock %}
+    <!-- Contenedor de búsqueda y tabla -->
+    <div class="p-6">
+      <!-- Barra superior con buscador y selector de registros -->
+      <div
+        class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4"
+      >
+        <!-- Buscador -->
+        <div class="search-container mb-0 flex-1">
+          <div class="relative">
+            <i class="fas fa-search search-icon"></i>
+            <input
+              type="text"
+              id="searchInput"
+              class="search-input"
+              placeholder="Buscar votante..."
+            />
+          </div>
+        </div>
 
-{% block content %}
-    <div class="max-w-7xl mx-auto">
-        <!-- Header Card -->
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-6">
-            <div class="gradient-header px-6 py-4">
-                <div class="flex items-center justify-between flex-wrap gap-4">
-                    <div class="flex items-center space-x-3">
-                        <div class="bg-white rounded-full p-2">
-                            <i class="fas fa-user-circle icon-institucional text-2xl"></i>
-                        </div>
-                        <h1 class="text-2xl font-bold text-white">Mis votantes</h1>
-                    </div>
-                    <a
-                            href="{% url 'exportar_lista' %}"
-                            class="inline-flex items-center space-x-2 bg-white text-red-600 px-6 py-3 rounded-lg font-semibold hover:bg-red-50 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                    >
-                        <i class="fas fa-excel-file"></i>
-                        <span>Exportar</span>
-                    </a>
-                    <a
-                            href="{% url 'save_votante' %}"
-                            class="inline-flex items-center space-x-2 bg-white text-red-600 px-6 py-3 rounded-lg font-semibold hover:bg-red-50 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                    >
-                        <i class="fas fa-plus-circle"></i>
-                        <span>Agregar</span>
-                    </a>
-                </div>
-            </div>
+        <!-- Selector de registros por página -->
+        <div class="flex items-center gap-2">
+          <label for="pageSize" class="text-sm text-gray-700 whitespace-nowrap"
+            >Mostrar:</label
+          >
+          <select id="pageSize" class="page-size-select">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </div>
+      </div>
 
-            <!-- Contenedor de búsqueda y tabla -->
-            <div class="p-6">
-                <!-- Barra superior con buscador y selector de registros -->
-                <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
-                    <!-- Buscador -->
-                    <div class="search-container mb-0 flex-1">
-                        <div class="relative">
-                            <i class="fas fa-search search-icon"></i>
-                            <input
-                                    type="text"
-                                    id="searchInput"
-                                    class="search-input"
-                                    placeholder="Buscar votante..."
-                            />
-                        </div>
-                    </div>
-
-                    <!-- Selector de registros por página -->
-                    <div class="flex items-center gap-2">
-                        <label for="pageSize" class="text-sm text-gray-700 whitespace-nowrap">Mostrar:</label>
-                        <select id="pageSize" class="page-size-select">
-                            <option value="10">10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Tabla -->
-                <div class="custom-table-container">
-                    <table class="custom-table" id="votantesTable">
-                        <thead>
-                        <tr>
-                            <th class="sortable" data-column="0" data-type="text">
-                                Identificación
-                                <span class="sort-icon">
+      <!-- Tabla -->
+      <div class="custom-table-container">
+        <table class="custom-table" id="votantesTable">
+          <thead>
+            <tr>
+              <th class="sortable" data-column="0" data-type="text">
+                Identificación
+                <span class="sort-icon">
                   <i class="fas fa-caret-up"></i>
                   <i class="fas fa-caret-down"></i>
                 </span>
-                            </th>
-                            <th class="sortable" data-column="1" data-type="text">
-                                Nombres
-                                <span class="sort-icon">
+              </th>
+              <th class="sortable" data-column="1" data-type="text">
+                Nombres
+                <span class="sort-icon">
                   <i class="fas fa-caret-up"></i>
                   <i class="fas fa-caret-down"></i>
                 </span>
-                            </th>
-                            <th class="sortable" data-column="2" data-type="text">
-                                Apellidos
-                                <span class="sort-icon">
+              </th>
+              <th class="sortable" data-column="2" data-type="text">
+                Apellidos
+                <span class="sort-icon">
                   <i class="fas fa-caret-up"></i>
                   <i class="fas fa-caret-down"></i>
                 </span>
-                            </th>
-                            <th class="sortable" data-column="3" data-type="text">
-                                Teléfono
-                                <span class="sort-icon">
+              </th>
+              <th class="sortable" data-column="3" data-type="text">
+                Teléfono
+                <span class="sort-icon">
                   <i class="fas fa-caret-up"></i>
                   <i class="fas fa-caret-down"></i>
                 </span>
-                            </th>
-                            <th class="sortable" data-column="4" data-type="date">
-                                Fecha de registro
-                                <span class="sort-icon">
+              </th>
+              <th class="sortable" data-column="4" data-type="date">
+                Fecha de registro
+                <span class="sort-icon">
                   <i class="fas fa-caret-up"></i>
                   <i class="fas fa-caret-down"></i>
                 </span>
-                            </th>
-                            <th>Editar</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for item in listado %}
-                            <tr>
-                                <td class="text-center">{{ item.identificacion }}</td>
-                                <td class="text-center">{{ item.nombres }}</td>
-                                <td class="text-center">{{ item.apellidos }}</td>
-                                <td class="text-center">{{ item.telefono }}</td>
-                                <td class="text-center" data-timestamp="{{ item.creado|date:'U' }}">
-                                    {{ item.creado|date:"d/m/Y H:i" }}
-                                </td>
-                                <td class="text-center">
-                                    <a
-                                            href="{% url 'votante_update' pk=item.id %}"
-                                            class="inline-flex items-center justify-center w-9 h-9 gradient-button text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                                            title="Editar votante"
-                                    >
-                                        <i class="fas fa-edit text-sm"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+              </th>
+              <th>Editar</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in listado %}
+            <tr>
+              <td class="text-center">{{ item.identificacion }}</td>
+              <td class="text-center">{{ item.nombres }}</td>
+              <td class="text-center">{{ item.apellidos }}</td>
+              <td class="text-center">{{ item.telefono }}</td>
+              <td
+                class="text-center"
+                data-timestamp="{{ item.creado|date:'U' }}"
+              >
+                {{ item.creado|date:"d/m/Y H:i" }}
+              </td>
+              <td class="text-center">
+                <a
+                  href="{% url 'votante_update' pk=item.id %}"
+                  class="inline-flex items-center justify-center w-9 h-9 gradient-button text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                  title="Editar votante"
+                >
+                  <i class="fas fa-edit text-sm"></i>
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
 
-                <!-- Mensaje cuando no hay resultados -->
-                <div id="noResults" class="hidden text-center py-8 text-gray-500">
-                    <i class="fas fa-search text-4xl mb-3 text-gray-300"></i>
-                    <p class="text-lg font-medium">No se encontraron votantes</p>
-                    <p class="text-sm">Intenta con otro término de búsqueda</p>
-                </div>
+      <!-- Mensaje cuando no hay resultados -->
+      <div id="noResults" class="hidden text-center py-8 text-gray-500">
+        <i class="fas fa-search text-4xl mb-3 text-gray-300"></i>
+        <p class="text-lg font-medium">No se encontraron votantes</p>
+        <p class="text-sm">Intenta con otro término de búsqueda</p>
+      </div>
 
-                <!-- Controles de paginación -->
-                <div class="pagination-container">
-                    <div class="pagination-info">
-                        Mostrando <span id="startRecord">1</span> a
-                        <span id="endRecord">10</span> de
-                        <span id="totalRecords">{{ listado|length }}</span> registros
-                        <span id="filteredInfo" class="hidden"
-                        >(filtrado de
+      <!-- Controles de paginación -->
+      <div class="pagination-container">
+        <div class="pagination-info">
+          Mostrando <span id="startRecord">1</span> a
+          <span id="endRecord">10</span> de
+          <span id="totalRecords">{{ listado|length }}</span> registros
+          <span id="filteredInfo" class="hidden"
+            >(filtrado de
             <span id="totalRecordsAll">{{ listado|length }}</span>
             registros)</span
-                        >
-                    </div>
-                    <div class="pagination-controls">
-                        <button id="prevBtn" class="page-btn">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <div id="pageNumbers" class="flex gap-1"></div>
-                        <button id="nextBtn" class="page-btn">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
+          >
         </div>
-
-        <!-- Info Card -->
-        <div class="alert-institucional rounded-lg p-4 shadow-md">
-            <div class="flex items-start space-x-3">
-                <i class="fas fa-info-circle icon-institucional text-xl mt-0.5"></i>
-                <div>
-                    <p class="text-sm text-gray-800">
-                        <span class="font-semibold">Total de votantes:</span>
-                        <span class="text-lg font-bold" id="totalCount">{{ listado|length }}</span>
-                    </p>
-                </div>
-            </div>
+        <div class="pagination-controls">
+          <button id="prevBtn" class="page-btn">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <div id="pageNumbers" class="flex gap-1"></div>
+          <button id="nextBtn" class="page-btn">
+            <i class="fas fa-chevron-right"></i>
+          </button>
         </div>
+      </div>
     </div>
-{% endblock %}
+  </div>
 
-{% block scripts %}
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const searchInput = document.getElementById("searchInput");
-            const table = document.getElementById("votantesTable");
-            const tbody = table.querySelector("tbody");
-            const allRows = Array.from(tbody.querySelectorAll("tr"));
-            const noResults = document.getElementById("noResults");
-            const tableContainer = table.parentElement;
+  <!-- Info Card -->
+  <div class="alert-institucional rounded-lg p-4 shadow-md">
+    <div class="flex items-start space-x-3">
+      <i class="fas fa-info-circle icon-institucional text-xl mt-0.5"></i>
+      <div>
+        <p class="text-sm text-gray-800">
+          <span class="font-semibold">Total de votantes:</span>
+          <span class="text-lg font-bold" id="totalCount"
+            >{{ listado|length }}</span
+          >
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("searchInput");
+    const table = document.getElementById("votantesTable");
+    const tbody = table.querySelector("tbody");
+    const allRows = Array.from(tbody.querySelectorAll("tr"));
+    const noResults = document.getElementById("noResults");
+    const tableContainer = table.parentElement;
 
-            // Paginación elementos
-            const pageSizeSelect = document.getElementById("pageSize");
-            const prevBtn = document.getElementById("prevBtn");
-            const nextBtn = document.getElementById("nextBtn");
-            const pageNumbers = document.getElementById("pageNumbers");
-            const startRecord = document.getElementById("startRecord");
-            const endRecord = document.getElementById("endRecord");
-            const totalRecords = document.getElementById("totalRecords");
-            const filteredInfo = document.getElementById("filteredInfo");
-            const totalRecordsAll = document.getElementById("totalRecordsAll");
+    // Paginación elementos
+    const pageSizeSelect = document.getElementById("pageSize");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const pageNumbers = document.getElementById("pageNumbers");
+    const startRecord = document.getElementById("startRecord");
+    const endRecord = document.getElementById("endRecord");
+    const totalRecords = document.getElementById("totalRecords");
+    const filteredInfo = document.getElementById("filteredInfo");
+    const totalRecordsAll = document.getElementById("totalRecordsAll");
 
-            const sortableHeaders = Array.from(table.querySelectorAll("th.sortable"));
-            const allHeaders = Array.from(table.querySelectorAll("th"));
+    const sortableHeaders = Array.from(table.querySelectorAll("th.sortable"));
+    const allHeaders = Array.from(table.querySelectorAll("th"));
 
-            let currentPage = 1;
-            let pageSize = parseInt(pageSizeSelect.value, 10) || 10;
-            let filteredRows = [...allRows];
-            let currentSort = {column: null, direction: null};
+    let currentPage = 1;
+    let pageSize = parseInt(pageSizeSelect.value, 10) || 10;
+    let filteredRows = [...allRows];
+    let currentSort = { column: null, direction: null };
 
-            function parseNumberSafe(str) {
-                if (typeof str !== "string") return null;
-                const cleaned = str
-                    .replace(/[^\d.,-]/g, "")
-                    .replace(/\.(?=\d{3})/g, "")
-                    .replace(",", ".");
-                const num = parseFloat(cleaned);
-                return isNaN(num) ? null : num;
-            }
+    function parseNumberSafe(str) {
+      if (typeof str !== "string") return null;
+      const cleaned = str
+        .replace(/[^\d.,-]/g, "")
+        .replace(/\.(?=\d{3})/g, "")
+        .replace(",", ".");
+      const num = parseFloat(cleaned);
+      return isNaN(num) ? null : num;
+    }
 
-            function sortRows(columnIndex, dataType) {
-                if (currentSort.column === columnIndex) {
-                    currentSort.direction =
-                        currentSort.direction === "asc" ? "desc" : "asc";
-                } else {
-                    currentSort.column = columnIndex;
-                    currentSort.direction = "asc";
-                }
+    function sortRows(columnIndex, dataType) {
+      if (currentSort.column === columnIndex) {
+        currentSort.direction =
+          currentSort.direction === "asc" ? "desc" : "asc";
+      } else {
+        currentSort.column = columnIndex;
+        currentSort.direction = "asc";
+      }
 
-                allHeaders.forEach((h) => h.classList.remove("sort-asc", "sort-desc"));
-                const headerActive = sortableHeaders.find(
-                    (h) => parseInt(h.dataset.column, 10) === columnIndex
-                );
-                if (headerActive)
-                    headerActive.classList.add(`sort-${currentSort.direction}`);
+      allHeaders.forEach((h) => h.classList.remove("sort-asc", "sort-desc"));
+      const headerActive = sortableHeaders.find(
+        (h) => parseInt(h.dataset.column, 10) === columnIndex
+      );
+      if (headerActive)
+        headerActive.classList.add(`sort-${currentSort.direction}`);
 
-                const dir = currentSort.direction === "asc" ? 1 : -1;
+      const dir = currentSort.direction === "asc" ? 1 : -1;
 
-                filteredRows.sort((rowA, rowB) => {
-                    const aCell = rowA.cells[columnIndex];
-                    const bCell = rowB.cells[columnIndex];
+      filteredRows.sort((rowA, rowB) => {
+        const aCell = rowA.cells[columnIndex];
+        const bCell = rowB.cells[columnIndex];
 
-                    let aVal = aCell ? aCell.textContent.trim() : "";
-                    let bVal = bCell ? bCell.textContent.trim() : "";
+        let aVal = aCell ? aCell.textContent.trim() : "";
+        let bVal = bCell ? bCell.textContent.trim() : "";
 
-                    if (dataType === "date") {
-                        const aTs = aCell ? parseInt(aCell.dataset.timestamp || "0", 10) : 0;
-                        const bTs = bCell ? parseInt(bCell.dataset.timestamp || "0", 10) : 0;
-                        return (aTs - bTs) * dir;
-                    }
+        if (dataType === "date") {
+          const aTs = aCell ? parseInt(aCell.dataset.timestamp || "0", 10) : 0;
+          const bTs = bCell ? parseInt(bCell.dataset.timestamp || "0", 10) : 0;
+          return (aTs - bTs) * dir;
+        }
 
-                    const aNum = parseFloat(aVal.replace(/[^\d.-]/g, ""));
-                    const bNum = parseFloat(bVal.replace(/[^\d.-]/g, ""));
-                    if (!isNaN(aNum) && !isNaN(bNum)) {
-                        return (aNum - bNum) * dir;
-                    }
+        const aNum = parseFloat(aVal.replace(/[^\d.-]/g, ""));
+        const bNum = parseFloat(bVal.replace(/[^\d.-]/g, ""));
+        if (!isNaN(aNum) && !isNaN(bNum)) {
+          return (aNum - bNum) * dir;
+        }
 
-                    return aVal.localeCompare(bVal, undefined, {numeric: true}) * dir;
-                });
+        return aVal.localeCompare(bVal, undefined, { numeric: true }) * dir;
+      });
 
-                const fragment = document.createDocumentFragment();
-                filteredRows.forEach((row) => fragment.appendChild(row));
-                tbody.innerHTML = "";
-                tbody.appendChild(fragment);
+      const fragment = document.createDocumentFragment();
+      filteredRows.forEach((row) => fragment.appendChild(row));
+      tbody.innerHTML = "";
+      tbody.appendChild(fragment);
 
-                currentPage = 1;
-                renderTable();
-            }
+      currentPage = 1;
+      renderTable();
+    }
 
-            sortableHeaders.forEach((header) => {
-                header.addEventListener("click", function () {
-                    const columnIndex = parseInt(this.dataset.column, 10);
-                    const dataType = this.dataset.type || "text";
-                    sortRows(columnIndex, dataType);
-                });
-            });
+    sortableHeaders.forEach((header) => {
+      header.addEventListener("click", function () {
+        const columnIndex = parseInt(this.dataset.column, 10);
+        const dataType = this.dataset.type || "text";
+        sortRows(columnIndex, dataType);
+      });
+    });
 
-            function renderTable() {
-                const start = (currentPage - 1) * pageSize;
-                const end = start + pageSize;
-                const totalPages = Math.max(1, Math.ceil(filteredRows.length / pageSize));
+    function renderTable() {
+      const start = (currentPage - 1) * pageSize;
+      const end = start + pageSize;
+      const totalPages = Math.max(1, Math.ceil(filteredRows.length / pageSize));
 
-                allRows.forEach((row) => (row.style.display = "none"));
-                const rowsToShow = filteredRows.slice(start, end);
-                rowsToShow.forEach((r) => (r.style.display = ""));
+      allRows.forEach((row) => (row.style.display = "none"));
+      const rowsToShow = filteredRows.slice(start, end);
+      rowsToShow.forEach((r) => (r.style.display = ""));
 
-                if (filteredRows.length === 0) {
-                    tableContainer.classList.add("hidden");
-                    noResults.classList.remove("hidden");
-                    startRecord.textContent = "0";
-                    endRecord.textContent = "0";
-                    totalRecords.textContent = "0";
-                } else {
-                    tableContainer.classList.remove("hidden");
-                    noResults.classList.add("hidden");
-                    startRecord.textContent = String(start + 1);
-                    endRecord.textContent = String(Math.min(end, filteredRows.length));
-                    totalRecords.textContent = String(filteredRows.length);
-                }
+      if (filteredRows.length === 0) {
+        tableContainer.classList.add("hidden");
+        noResults.classList.remove("hidden");
+        startRecord.textContent = "0";
+        endRecord.textContent = "0";
+        totalRecords.textContent = "0";
+      } else {
+        tableContainer.classList.remove("hidden");
+        noResults.classList.add("hidden");
+        startRecord.textContent = String(start + 1);
+        endRecord.textContent = String(Math.min(end, filteredRows.length));
+        totalRecords.textContent = String(filteredRows.length);
+      }
 
-                if (filteredRows.length < allRows.length) {
-                    filteredInfo.classList.remove("hidden");
-                    totalRecordsAll.textContent = String(allRows.length);
-                } else {
-                    filteredInfo.classList.add("hidden");
-                }
+      if (filteredRows.length < allRows.length) {
+        filteredInfo.classList.remove("hidden");
+        totalRecordsAll.textContent = String(allRows.length);
+      } else {
+        filteredInfo.classList.add("hidden");
+      }
 
-                prevBtn.disabled = currentPage === 1;
-                nextBtn.disabled =
-                    currentPage === totalPages || filteredRows.length === 0;
+      prevBtn.disabled = currentPage === 1;
+      nextBtn.disabled =
+        currentPage === totalPages || filteredRows.length === 0;
 
-                renderPageNumbers(totalPages);
-            }
+      renderPageNumbers(totalPages);
+    }
 
-            function renderPageNumbers(totalPages) {
-                pageNumbers.innerHTML = "";
+    function renderPageNumbers(totalPages) {
+      pageNumbers.innerHTML = "";
 
-                function createPageButton(pageNum) {
-                    const btn = document.createElement("button");
-                    btn.className = "page-btn" + (pageNum === currentPage ? " active" : "");
-                    btn.textContent = pageNum;
-                    btn.addEventListener("click", () => {
-                        currentPage = pageNum;
-                        renderTable();
-                    });
-                    return btn;
-                }
-
-                function createEllipsis() {
-                    const span = document.createElement("span");
-                    span.className = "page-btn";
-                    span.style.cursor = "default";
-                    span.textContent = "...";
-                    return span;
-                }
-
-                if (totalPages <= 7) {
-                    for (let i = 1; i <= totalPages; i++)
-                        pageNumbers.appendChild(createPageButton(i));
-                } else {
-                    pageNumbers.appendChild(createPageButton(1));
-                    if (currentPage > 3) pageNumbers.appendChild(createEllipsis());
-
-                    const startPage = Math.max(2, currentPage - 1);
-                    const endPage = Math.min(totalPages - 1, currentPage + 1);
-                    for (let i = startPage; i <= endPage; i++)
-                        pageNumbers.appendChild(createPageButton(i));
-
-                    if (currentPage < totalPages - 2)
-                        pageNumbers.appendChild(createEllipsis());
-                    pageNumbers.appendChild(createPageButton(totalPages));
-                }
-            }
-
-            prevBtn.addEventListener("click", () => {
-                if (currentPage > 1) {
-                    currentPage--;
-                    renderTable();
-                }
-            });
-
-            nextBtn.addEventListener("click", () => {
-                const totalPages = Math.ceil(filteredRows.length / pageSize);
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    renderTable();
-                }
-            });
-
-            pageSizeSelect.addEventListener("change", function () {
-                pageSize = parseInt(this.value, 10) || 10;
-                currentPage = 1;
-                renderTable();
-            });
-
-            searchInput.addEventListener("keyup", function () {
-                const term = this.value.toLowerCase().trim();
-                filteredRows = allRows.filter((row) =>
-                    row.textContent.toLowerCase().includes(term)
-                );
-
-                if (currentSort.column !== null && currentSort.direction) {
-                    const col = currentSort.column;
-                    const dataType =
-                        (
-                            sortableHeaders.find(
-                                (h) => parseInt(h.dataset.column, 10) === col
-                            ) || {}
-                        ).dataset?.type || "text";
-                    const dir = currentSort.direction === "asc" ? 1 : -1;
-                    filteredRows.sort((rowA, rowB) => {
-                        const aCell = rowA.cells[col];
-                        const bCell = rowB.cells[col];
-                        let aVal = aCell ? aCell.textContent.trim() : "";
-                        let bVal = bCell ? bCell.textContent.trim() : "";
-
-                        if (dataType === "date") {
-                            const aTs = aCell
-                                ? parseInt(aCell.dataset.timestamp || "0", 10)
-                                : 0;
-                            const bTs = bCell
-                                ? parseInt(bCell.dataset.timestamp || "0", 10)
-                                : 0;
-                            return (aTs - bTs) * dir;
-                        }
-
-                        const aNum = parseNumberSafe(aVal);
-                        const bNum = parseNumberSafe(bVal);
-                        if (aNum !== null && bNum !== null) {
-                            if (aNum < bNum) return -1 * dir;
-                            if (aNum > bNum) return 1 * dir;
-                            return 0;
-                        }
-                        return aVal.localeCompare(bVal, undefined, {numeric: true}) * dir;
-                    });
-                }
-
-                currentPage = 1;
-                renderTable();
-            });
-
-            renderTable();
+      function createPageButton(pageNum) {
+        const btn = document.createElement("button");
+        btn.className = "page-btn" + (pageNum === currentPage ? " active" : "");
+        btn.textContent = pageNum;
+        btn.addEventListener("click", () => {
+          currentPage = pageNum;
+          renderTable();
         });
-    </script>
+        return btn;
+      }
+
+      function createEllipsis() {
+        const span = document.createElement("span");
+        span.className = "page-btn";
+        span.style.cursor = "default";
+        span.textContent = "...";
+        return span;
+      }
+
+      if (totalPages <= 7) {
+        for (let i = 1; i <= totalPages; i++)
+          pageNumbers.appendChild(createPageButton(i));
+      } else {
+        pageNumbers.appendChild(createPageButton(1));
+        if (currentPage > 3) pageNumbers.appendChild(createEllipsis());
+
+        const startPage = Math.max(2, currentPage - 1);
+        const endPage = Math.min(totalPages - 1, currentPage + 1);
+        for (let i = startPage; i <= endPage; i++)
+          pageNumbers.appendChild(createPageButton(i));
+
+        if (currentPage < totalPages - 2)
+          pageNumbers.appendChild(createEllipsis());
+        pageNumbers.appendChild(createPageButton(totalPages));
+      }
+    }
+
+    prevBtn.addEventListener("click", () => {
+      if (currentPage > 1) {
+        currentPage--;
+        renderTable();
+      }
+    });
+
+    nextBtn.addEventListener("click", () => {
+      const totalPages = Math.ceil(filteredRows.length / pageSize);
+      if (currentPage < totalPages) {
+        currentPage++;
+        renderTable();
+      }
+    });
+
+    pageSizeSelect.addEventListener("change", function () {
+      pageSize = parseInt(this.value, 10) || 10;
+      currentPage = 1;
+      renderTable();
+    });
+
+    searchInput.addEventListener("keyup", function () {
+      const term = this.value.toLowerCase().trim();
+      filteredRows = allRows.filter((row) =>
+        row.textContent.toLowerCase().includes(term)
+      );
+
+      if (currentSort.column !== null && currentSort.direction) {
+        const col = currentSort.column;
+        const dataType =
+          (
+            sortableHeaders.find(
+              (h) => parseInt(h.dataset.column, 10) === col
+            ) || {}
+          ).dataset?.type || "text";
+        const dir = currentSort.direction === "asc" ? 1 : -1;
+        filteredRows.sort((rowA, rowB) => {
+          const aCell = rowA.cells[col];
+          const bCell = rowB.cells[col];
+          let aVal = aCell ? aCell.textContent.trim() : "";
+          let bVal = bCell ? bCell.textContent.trim() : "";
+
+          if (dataType === "date") {
+            const aTs = aCell
+              ? parseInt(aCell.dataset.timestamp || "0", 10)
+              : 0;
+            const bTs = bCell
+              ? parseInt(bCell.dataset.timestamp || "0", 10)
+              : 0;
+            return (aTs - bTs) * dir;
+          }
+
+          const aNum = parseNumberSafe(aVal);
+          const bNum = parseNumberSafe(bVal);
+          if (aNum !== null && bNum !== null) {
+            if (aNum < bNum) return -1 * dir;
+            if (aNum > bNum) return 1 * dir;
+            return 0;
+          }
+          return aVal.localeCompare(bVal, undefined, { numeric: true }) * dir;
+        });
+      }
+
+      currentPage = 1;
+      renderTable();
+    });
+
+    renderTable();
+  });
+</script>
 {% endblock %}
