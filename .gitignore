@@ -24,7 +24,7 @@ db.sqlite3
 
 # Static files (if collected locally for deployment)
 # If you build static files locally and commit them, remove this line.
-/static/
+#/static/
 
 # IDE-specific files (e.g., PyCharm, VS Code)
 .idea/
