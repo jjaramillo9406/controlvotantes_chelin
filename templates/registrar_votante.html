@@ -254,12 +254,21 @@
     const puestosList = document.getElementById('puestos-list');
 
     puestoSearch.addEventListener('input', function() {
+        const inputValue = this.value;
         const options = puestosList.querySelectorAll('option');
         let found = false;
         
         options.forEach(option => {
-            if (option.value === this.value) {
-                puestoHidden.value = option.value;
+            const optionLabel = option.getAttribute('data-label');
+            const optionValue = option.value;
+            
+            // Buscar por coincidencia exacta del label o value
+            if (optionLabel === inputValue || optionValue === inputValue) {
+                puestoHidden.value = optionValue;
+                // Mostrar el label en el input
+                if (this.value === optionValue) {
+                    this.value = optionLabel;
+                }
                 found = true;
             }
         });
@@ -267,6 +276,23 @@
         if (!found) {
             puestoHidden.value = '';
         }
+    });
+
+    // Evento cuando se selecciona del datalist
+    puestoSearch.addEventListener('change', function() {
+        const inputValue = this.value;
+        const options = puestosList.querySelectorAll('option');
+        
+        options.forEach(option => {
+            const optionValue = option.value;
+            
+            // Si el input tiene el value (código), reemplazarlo por el label (nombre)
+            if (optionValue === inputValue) {
+                const optionLabel = option.getAttribute('data-label');
+                this.value = optionLabel;
+                puestoHidden.value = optionValue;
+            }
+        });
     });
 
     // Cargar valor inicial si existe
