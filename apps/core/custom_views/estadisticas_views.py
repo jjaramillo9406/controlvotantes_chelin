@@ -72,9 +72,8 @@ def est_municipios_view(request):
         estadistica.cod_depto = municipio.depto.id
         estadistica.nom_depto = municipio.depto.nombre
         estadistica.meta = municipio.meta
-        usuarios = UserConfig.objects.filter(municipio_id=municipio.id)
-        for usuario in usuarios:
-            estadistica.registrados += Votante.objects.filter(usuario_id=usuario.id, municipio_id=municipio.id).count()
+        estadistica.registrados += Votante.objects.filter(municipio_id=municipio.id).count()
+
         if estadistica.meta > 0:
             estadisticas.append(estadistica.to_dict())
     return JsonResponse(json.dumps(estadisticas), safe=False)
