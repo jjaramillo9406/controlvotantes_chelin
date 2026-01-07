@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from apps.core.models import Votante, UserConfig, Municipio, Puesto
+from apps.core.models import Votante, UserConfig, Municipio, Puesto, MetaUsuario
 
 
 class VotanteForm(forms.ModelForm):
@@ -66,3 +66,19 @@ class UserCreateForm(forms.Form):
 
     def clean_email(self):
         return self.cleaned_data['email'].upper()
+
+
+class MetaUsuarioForm(forms.ModelForm):
+    class Meta:
+        model = MetaUsuario
+        fields = ['puesto', 'meta']
+        widgets = {
+            'puesto': forms.Select(attrs={'class': 'form-control'}),
+            'meta': forms.NumberInput(attrs={'class': 'form-control', 'type': 'number'})
+        }
+
+    def clean_meta(self):
+        meta = self.cleaned_data['meta']
+        if meta <= 0:
+            raise forms.ValidationError("La meta electoral debe ser igual o superior a 0")
+        return meta
