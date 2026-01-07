@@ -34,6 +34,7 @@ def index(request):
 
     for usuario in usuarios:
         estadistica = Estadistica()
+        estadistica.id = usuario.id
         estadistica.identificacion = usuario.user_config.identificacion
         estadistica.nombres = usuario.first_name
         estadistica.apellidos = usuario.last_name

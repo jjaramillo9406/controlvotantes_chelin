@@ -1,5 +1,6 @@
 
 class Estadistica:
+    id = 0
     identificacion = ""
     nombres = ""
     apellidos = ""
