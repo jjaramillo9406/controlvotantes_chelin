@@ -82,7 +82,7 @@ def create_meta(request, pk):
         form = MetaUsuarioForm(request.POST)
         if form.is_valid():
             meta = form.save(commit=False)
-            meta.user_id = request.user.id
+            meta.user_id = pk
             meta.save()
 
             user_config.meta += meta.meta
