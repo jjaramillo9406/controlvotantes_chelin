@@ -11,6 +11,7 @@ urlpatterns = [
     path('estadisticas/get_estados_municipios', estadisticas_views.est_municipios_view, name='get_estados_municipios'),
     path('usuarios/create/', usuarios_views.create, name='usuarios_create'),
     path('usuarios/', usuarios_views.index, name='usuarios'),
+    path('usuarios/detail/<int:pk>/', usuarios_views.show, name='usuario_detail'),
     path('index/', views.index, name='index'),
     path('exportar_lista/', views.exportar_votantes, name='exportar_lista'),
     path('login/', views.sign_in, name='login'),

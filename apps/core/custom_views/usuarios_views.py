@@ -4,9 +4,10 @@ from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from django.views.decorators.http import require_http_methods
 
-from apps.core.form import UserCreateForm
-from apps.core.models import UserConfig
+from apps.core.form import UserCreateForm, MetaUsuarioForm
+from apps.core.models import UserConfig, MetaUsuario
 
 
 @login_required(login_url=reverse_lazy('login'))
@@ -40,13 +41,40 @@ def create(request):
             user_config.identificacion = form.cleaned_data['identificacion']
             user_config.nivel = form.cleaned_data['nivel']
             user_config.meta = form.cleaned_data['meta']
-            user_config.municipio_id = form.cleaned_data['municipio'].id
             user_config.save()
 
-
+            meta_electoral = MetaUsuario()
+            meta_electoral.user_id = user.id
+            meta_electoral.meta = user_config.meta
+            meta_electoral.puesto_id = form.cleaned_data['puesto'].id
+            meta_electoral.save()
 
             messages.success(request, "Usuario creado exitosamente")
             return redirect('usuarios')
     return render(request, "usuarios/create.html", {
         'form': form
     })
+
+
+@login_required(login_url=reverse_lazy('login'))
+@require_http_methods(["GET"])
+def show(request, pk):
+    usuario = User.objects.filter(id=pk).first()
+    if usuario is not None:
+        config = UserConfig.objects.filter(user_id=usuario.id).first()
+        metas = MetaUsuario.objects.filter(user_id=usuario.id)
+        return render(request, "usuarios/detail.html", {
+            "usuario": usuario,
+            "config": config,
+            "metas": metas
+        })
+    else:
+        messages.error(request, "Usuario no existe")
+        return redirect('usuarios')
+
+@login_required(login_url=reverse_lazy('login'))
+@require_http_methods(["POST"])
+def create_meta(request, pk):
+    form = MetaUsuarioForm()
+
+
