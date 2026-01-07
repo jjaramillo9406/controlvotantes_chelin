@@ -41,7 +41,6 @@ class UserConfig(models.Model):
     nivel = models.PositiveIntegerField(null=False, default=0)
     identificacion = models.CharField(max_length=10, null=False, unique=True, default='')
     meta = models.PositiveIntegerField(null=False, default=0)
-    municipio = models.ForeignKey(Municipio, null=True, on_delete=models.RESTRICT)
 
     class Meta:
         db_table = 'users_config'
