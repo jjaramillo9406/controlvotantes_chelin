@@ -10,7 +10,7 @@ SECRET_KEY = 'django-insecure-^ys#4c8572*qw2rqiesijaq3f^hx8y0v+gag^(da+7gb7b23bz
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'https://controlv-cheli-0f6281250f25.herokuapp.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'controlv-cheli-0f6281250f25.herokuapp.com']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
