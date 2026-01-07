@@ -35,7 +35,6 @@ def index(request):
     for usuario in usuarios:
         estadistica = Estadistica()
         estadistica.identificacion = usuario.user_config.identificacion
-        estadistica.municipio = usuario.user_config.municipio.nombre
         estadistica.nombres = usuario.first_name
         estadistica.apellidos = usuario.last_name
         estadistica.registrados = Votante.objects.filter(usuario_id=usuario.id).count()

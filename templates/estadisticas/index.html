@@ -65,13 +65,6 @@
                   <i class="fas fa-caret-down"></i>
                 </span>
               </th>
-              <th class="sortable" data-column="3" data-type="text">
-                Municipio
-                <span class="sort-icon">
-                  <i class="fas fa-caret-up"></i>
-                  <i class="fas fa-caret-down"></i>
-                </span>
-              </th>
               <th class="sortable" data-column="4" data-type="date">
                 Último registro
                 <span class="sort-icon">
@@ -122,7 +115,6 @@
               <td class="text-center">{{ item.identificacion }}</td>
               <td class="text-center">{{ item.nombres }}</td>
               <td class="text-center">{{ item.apellidos }}</td>
-              <td class="text-center">{{ item.municipio }}</td>
               <td
                 class="text-center"
                 data-timestamp="{% if item.ultimo_registro %}{{ item.ultimo_registro|date:'U' }}{% else %}0{% endif %}"
