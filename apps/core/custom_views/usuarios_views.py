@@ -34,6 +34,7 @@ def create(request):
             user.is_active = True
             user.username = form.cleaned_data['email'].lower()
             user.save()
+
             user_config = UserConfig()
             user_config.user_id = user.id
             user_config.identificacion = form.cleaned_data['identificacion']
@@ -41,6 +42,9 @@ def create(request):
             user_config.meta = form.cleaned_data['meta']
             user_config.municipio_id = form.cleaned_data['municipio'].id
             user_config.save()
+
+
+
             messages.success(request, "Usuario creado exitosamente")
             return redirect('usuarios')
     return render(request, "usuarios/create.html", {

@@ -11,7 +11,7 @@ from django.views.decorators.http import require_http_methods
 from apps.core.http import get_user_ip
 
 from apps.core.form import VotanteForm
-from apps.core.models import Votante, UserConfig
+from apps.core.models import Votante, UserConfig, Puesto
 from apps.core.reports import generate_excel_lista
 
 
@@ -73,9 +73,11 @@ def registrar_votante(request):
             existe = Votante.objects.filter(identificacion=form.cleaned_data['identificacion'])
             if not existe:
                 votante = form.save(commit=False)
+                puesto = Puesto.objects.filter(id=votante.puesto_id).first()
                 votante.usuario_id = request.user.id
                 votante.nombres = votante.nombres.upper()
                 votante.apellidos = votante.apellidos.upper()
+                votante.municipio_id = puesto.municipio_id
                 if not votante.email is None:
                     votante.email = votante.email.upper()
                 if not votante.direccion is None:

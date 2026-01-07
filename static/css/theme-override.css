@@ -1,0 +1,194 @@
+/* ============================================
+   THEME OVERRIDE - AZUL Y BLANCO
+   Sobrescribe cualquier color residual para asegurar
+   consistencia total con el tema del partido
+   ============================================ */
+
+/* Colores de texto */
+.text-red-50, .text-red-100, .text-red-200, .text-red-300, 
+.text-red-400, .text-red-500, .text-red-600, .text-red-700, 
+.text-red-800, .text-red-900,
+.text-orange-50, .text-orange-100, .text-orange-200, .text-orange-300,
+.text-orange-400, .text-orange-500, .text-orange-600, .text-orange-700,
+.text-orange-800, .text-orange-900,
+.text-yellow-50, .text-yellow-100, .text-yellow-200, .text-yellow-300,
+.text-yellow-400, .text-yellow-500, .text-yellow-600, .text-yellow-700,
+.text-yellow-800, .text-yellow-900 {
+  color: #2563eb !important;
+}
+
+/* Fondos */
+.bg-red-50, .bg-red-100, .bg-red-200,
+.bg-orange-50, .bg-orange-100, .bg-orange-200,
+.bg-yellow-50, .bg-yellow-100, .bg-yellow-200 {
+  background-color: #dbeafe !important;
+}
+
+.bg-red-500, .bg-red-600, .bg-red-700,
+.bg-orange-500, .bg-orange-600, .bg-orange-700,
+.bg-yellow-500, .bg-yellow-600, .bg-yellow-700 {
+  background-color: #2563eb !important;
+}
+
+/* Bordes */
+.border-red-200, .border-red-300, .border-red-400,
+.border-orange-200, .border-orange-300, .border-orange-400,
+.border-yellow-200, .border-yellow-300, .border-yellow-400 {
+  border-color: #93c5fd !important;
+}
+
+.border-red-500, .border-red-600, .border-red-700,
+.border-orange-500, .border-orange-600, .border-orange-700,
+.border-yellow-500, .border-yellow-600, .border-yellow-700 {
+  border-color: #2563eb !important;
+}
+
+/* Hover states */
+.hover\:bg-red-50:hover, .hover\:bg-red-100:hover,
+.hover\:bg-orange-50:hover, .hover\:bg-orange-100:hover,
+.hover\:bg-yellow-50:hover, .hover\:bg-yellow-100:hover {
+  background-color: #dbeafe !important;
+}
+
+.hover\:bg-red-500:hover, .hover\:bg-red-600:hover,
+.hover\:bg-orange-500:hover, .hover\:bg-orange-600:hover,
+.hover\:bg-yellow-500:hover, .hover\:bg-yellow-600:hover {
+  background-color: #1e40af !important;
+}
+
+.hover\:text-red-600:hover, .hover\:text-red-700:hover,
+.hover\:text-orange-600:hover, .hover\:text-orange-700:hover,
+.hover\:text-yellow-600:hover, .hover\:text-yellow-700:hover {
+  color: #1e40af !important;
+}
+
+/* Focus states */
+.focus\:ring-red-400:focus, .focus\:ring-red-500:focus,
+.focus\:ring-orange-400:focus, .focus\:ring-orange-500:focus,
+.focus\:ring-yellow-400:focus, .focus\:ring-yellow-500:focus {
+  --tw-ring-color: #60a5fa !important;
+}
+
+.focus\:border-red-400:focus, .focus\:border-red-500:focus,
+.focus\:border-orange-400:focus, .focus\:border-orange-500:focus,
+.focus\:border-yellow-400:focus, .focus\:border-yellow-500:focus {
+  border-color: #2563eb !important;
+}
+
+/* Gradientes - Reemplazar gradientes rojos/naranjas/amarillos con azul/blanco */
+.bg-gradient-to-r.from-red-50,
+.bg-gradient-to-r.from-red-100,
+.bg-gradient-to-r.from-orange-50,
+.bg-gradient-to-r.from-orange-100,
+.bg-gradient-to-r.from-yellow-50,
+.bg-gradient-to-r.from-yellow-100 {
+  background-image: linear-gradient(to right, #dbeafe, #bfdbfe) !important;
+}
+
+.bg-gradient-to-br.from-red-50,
+.bg-gradient-to-br.from-orange-50,
+.bg-gradient-to-br.from-yellow-50 {
+  background-image: linear-gradient(to bottom right, #dbeafe, #eff6ff, #ffffff) !important;
+}
+
+/* Ring colors (para focus states) */
+.ring-red-400, .ring-red-500,
+.ring-orange-400, .ring-orange-500,
+.ring-yellow-400, .ring-yellow-500 {
+  --tw-ring-color: #60a5fa !important;
+}
+
+/* Botones con colores institucionales antiguos */
+button.bg-red-600,
+button.bg-orange-600,
+button.bg-yellow-600,
+a.bg-red-600,
+a.bg-orange-600,
+a.bg-yellow-600 {
+  background-color: #2563eb !important;
+}
+
+button.bg-red-600:hover,
+button.bg-orange-600:hover,
+button.bg-yellow-600:hover,
+a.bg-red-600:hover,
+a.bg-orange-600:hover,
+a.bg-yellow-600:hover {
+  background-color: #1e40af !important;
+}
+
+/* Asegurar que los gradientes institucionales usen azul */
+.gradient-button,
+.btn-gradient,
+.bg-gradient-institutional {
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%) !important;
+}
+
+.gradient-button:hover,
+.btn-gradient:hover,
+.bg-gradient-institutional:hover {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%) !important;
+}
+
+.gradient-header {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 30%, #2563eb 70%, #60a5fa 100%) !important;
+}
+
+/* Sombras con colores institucionales */
+.shadow-red-lg,
+.shadow-orange-lg,
+.shadow-yellow-lg {
+  box-shadow: 0 10px 15px -3px rgba(30, 64, 175, 0.1), 0 4px 6px -2px rgba(30, 64, 175, 0.05) !important;
+}
+
+/* Placeholder colors */
+::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Override para cualquier SVG con fill de colores antiguos */
+svg.text-red-500,
+svg.text-red-600,
+svg.text-orange-500,
+svg.text-orange-600,
+svg.text-yellow-500,
+svg.text-yellow-600 {
+  color: #2563eb !important;
+}
+
+/* Alerts y notificaciones */
+.alert-red,
+.alert-orange,
+.alert-yellow {
+  background-color: #dbeafe !important;
+  border-left-color: #2563eb !important;
+  color: #1e40af !important;
+}
+
+/* Estados activos */
+.active.text-red-600,
+.active.text-orange-600,
+.active.text-yellow-600 {
+  color: #2563eb !important;
+}
+
+.active.bg-red-100,
+.active.bg-orange-100,
+.active.bg-yellow-100 {
+  background-color: #dbeafe !important;
+}
+
+/* Divisores y bordes decorativos */
+.divide-red-200,
+.divide-orange-200,
+.divide-yellow-200 {
+  border-color: #bfdbfe !important;
+}
+
+/* Badge y tags */
+.badge-red,
+.badge-orange,
+.badge-yellow {
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%) !important;
+  color: white !important;
+}
