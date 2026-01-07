@@ -64,7 +64,7 @@ def index(request):
 @login_required(login_url=reverse_lazy('login'))
 @require_http_methods(['GET'])
 def est_municipios_view(request):
-    municipios = Municipio.objects.all()
+    municipios = Municipio.objects.order_by('-meta', 'nombre').all()
     estadisticas = []
     for municipio in municipios:
         estadistica = EstadisticaMunicipio()
@@ -72,9 +72,9 @@ def est_municipios_view(request):
         estadistica.nom_municipio = municipio.nombre
         estadistica.cod_depto = municipio.depto.id
         estadistica.nom_depto = municipio.depto.nombre
+        estadistica.meta = municipio.meta
         usuarios = UserConfig.objects.filter(municipio_id=municipio.id)
         for usuario in usuarios:
-            estadistica.meta += usuario.meta
             estadistica.registrados += Votante.objects.filter(usuario_id=usuario.id, municipio_id=municipio.id).count()
         if estadistica.meta > 0:
             estadisticas.append(estadistica.to_dict())

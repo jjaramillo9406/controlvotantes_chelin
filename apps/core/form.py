@@ -1,13 +1,13 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from apps.core.models import Votante, UserConfig, Municipio
+from apps.core.models import Votante, UserConfig, Municipio, Puesto
 
 
 class VotanteForm(forms.ModelForm):
     class Meta:
         model = Votante
-        fields = ['identificacion', 'nombres', 'apellidos', 'direccion', 'telefono', 'email', 'referido', 'municipio']
+        fields = ['identificacion', 'nombres', 'apellidos', 'direccion', 'telefono', 'email', 'referido', 'puesto']
         widgets = {
             'identificacion': forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'off'}),
             'nombres': forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'off'}),
@@ -16,7 +16,7 @@ class VotanteForm(forms.ModelForm):
             'telefono': forms.NumberInput(attrs={'class': 'form-control', 'autocomplete': 'off'}),
             'email': forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'off'}),
             'referido': forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'off'}),
-            'municipio': forms.Select(attrs={'class': 'form-control'})
+            'puesto': forms.Select(attrs={'class': 'form-control'})
         }
 
     def clean_identificacion(self):
@@ -38,7 +38,7 @@ class VotanteForm(forms.ModelForm):
 class UserCreateForm(forms.Form):
     NIVELES = (
         (1, 'SOLO CONSULTAS'),
-        (2, 'LIDER'),
+        (2, 'CAPTURADOR'),
         (3, 'VALIDADOR'),
         (99, 'ADMINISTRADOR')
     )
@@ -49,7 +49,7 @@ class UserCreateForm(forms.Form):
     nivel = forms.ChoiceField(choices=NIVELES, widget=forms.Select(attrs={'class': 'form-control'}))
     email = forms.EmailField(max_length=150, widget=forms.EmailInput(attrs={'class': 'form-control text-uppercase'}))
     meta = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    municipio = forms.ModelChoiceField(queryset=Municipio.objects.all(), required=False, widget=forms.Select(attrs={'class': 'form-control'}))
+    puesto = forms.ModelChoiceField(queryset=Puesto.objects.all(), required=False, widget=forms.Select(attrs={'class': 'form-control'}))
 
     def clean_identificacion(self):
         identificacion = self.cleaned_data['identificacion']

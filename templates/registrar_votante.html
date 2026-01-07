@@ -139,10 +139,10 @@
 
                 <div>
                     <label
-                            for="{{ form.municipio.id_for_label }}"
+                            for="{{ form.puesto.id_for_label }}"
                             class="block text-sm font-medium text-gray-700 mb-2"
                     >
-                        Municipio
+                        Puesto de votación
                     </label>
                     <div class="relative">
                         <div
@@ -150,10 +150,10 @@
                         >
                             <i class="fas fa-user text-gray-400"></i>
                         </div>
-                        {{ form.municipio }}
+                        {{ form.puesto }}
                     </div>
-                    {% if form.municipio.errors %}
-                        <p class="mt-1 text-sm text-blue-600">{{ form.municipio.errors.0 }}</p>
+                    {% if form.puesto.errors %}
+                        <p class="mt-1 text-sm text-blue-600">{{ form.puesto.errors.0 }}</p>
                     {% endif %}
                 </div>
 

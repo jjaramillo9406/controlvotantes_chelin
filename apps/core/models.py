@@ -17,12 +17,14 @@ class Municipio(models.Model):
     id = models.CharField(max_length=5, primary_key=True)
     depto = models.ForeignKey(Departamento, null=False, on_delete=models.RESTRICT)
     nombre = models.CharField(max_length=150, null=False)
+    meta = models.PositiveIntegerField(null=False, default=0)
 
     def __str__(self):
         return self.nombre
 
     class Meta:
         db_table = 'municipios'
+        ordering = ['nombre']
 
 class Comuna(models.Model):
     municipio = models.ForeignKey(Municipio, null=False, on_delete=models.RESTRICT)
@@ -46,15 +48,18 @@ class UserConfig(models.Model):
 
 
 class Puesto(models.Model):
-    nombre = models.CharField(max_length=150, unique=True)
+    nombre = models.CharField(max_length=150)
+    municipio = models.ForeignKey(Municipio, null=True, on_delete=models.RESTRICT)
     comuna = models.ForeignKey(Comuna, null=False, on_delete=models.RESTRICT, default='')
     estado = models.BooleanField(null=False, default=True)
 
     def __str__(self):
-        return self.nombre
+        return f"{self.municipio.nombre}-{self.nombre}"
 
     class Meta:
         db_table = 'puestos'
+        unique_together = ['nombre', 'comuna']
+        ordering = ['municipio__nombre', 'nombre']
 
 
 class Votante(models.Model):
@@ -82,3 +87,15 @@ class Votante(models.Model):
     class Meta:
         db_table = 'votantes'
         unique_together = ('identificacion', 'usuario')
+
+
+class MetaUsuario(models.Model):
+    user = models.ForeignKey(User, null=False, on_delete=models.RESTRICT)
+    puesto = models.ForeignKey(Puesto, null=False, on_delete=models.RESTRICT)
+    meta = models.PositiveIntegerField(null=False, default=0)
+
+    def __str__(self):
+        return self.puesto
+
+    class Meta:
+        db_table = 'metas_usuarios'
