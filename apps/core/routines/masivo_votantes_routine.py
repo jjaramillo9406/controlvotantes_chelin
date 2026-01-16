@@ -61,7 +61,7 @@ def load_votantes(data):
                         votante.direccion = row[4]
                         votante.municipio_id = municipio.id
                         votante.puesto_id = puesto.id
-                        if row[8] != "":
+                        if row[8] != "" and str(row[8]) != "nan":
                             votante.mesa = row[8]
                         votante.usuario_id = user.id
                         votante.asistio = False
