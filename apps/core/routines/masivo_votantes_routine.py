@@ -25,10 +25,7 @@ def load_votantes(data):
                         if row[1] == "":
                             errors.append(f"{index}: Apelidos del votante no validos")
 
-                        if row[2] != "":
-                            if Votante.objects.filter(identificacion=row[2]).exists():
-                                errors.append(f"{index}: Votante ya se encuentra registrado")
-                        else:
+                        if row[2] == "":
                             errors.append(f"{index}: Documento del votante no valido")
 
                         if row[5] != "":
@@ -53,23 +50,24 @@ def load_votantes(data):
                             errors.append(f"{index}: Usuario no valido")
 
                         if len(errors) == 0:
-                            votante = Votante()
-                            votante.nombres = row[0].upper()
-                            votante.apellidos = row[1].upper()
-                            votante.identificacion = row[2]
-                            votante.telefono = row[3]
-                            votante.direccion = row[4]
-                            votante.municipio_id = municipio.id
-                            votante.puesto_id = puesto.id
-                            if row[8] != "" and str(row[8]) != "nan":
-                                votante.mesa = row[8]
-                            else:
-                                votante.mesa = 0
-                            votante.usuario_id = user.id
-                            votante.asistio = False
-                            votante.referido = "N/A"
-                            votante.full_clean()
-                            votante.save()
+                            if not Votante.objects.filter(identificacion=row[2]).exists():
+                                votante = Votante()
+                                votante.nombres = row[0].upper()
+                                votante.apellidos = row[1].upper()
+                                votante.identificacion = row[2]
+                                votante.telefono = row[3]
+                                votante.direccion = row[4]
+                                votante.municipio_id = municipio.id
+                                votante.puesto_id = puesto.id
+                                if row[8] != "" and str(row[8]) != "nan":
+                                    votante.mesa = row[8]
+                                else:
+                                    votante.mesa = 0
+                                votante.usuario_id = user.id
+                                votante.asistio = False
+                                votante.referido = "N/A"
+                                votante.full_clean()
+                                votante.save()
         except IntegrityError as e:
             errors.append(e.args[0])
         except:
