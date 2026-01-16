@@ -1,0 +1,22 @@
+{% extends "shared/layout.html" %}
+
+{% block content %}
+	<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+        <div class="row justify-content-center">
+            <div class="col-4">
+                {{ form.archivo.label }}
+                {{ form.archivo }}
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <button type="submit">
+                    <i class="fas fa-save"></i>
+                    Procesar
+                </button>
+            </div>
+        </div>
+        {% include "shared/_form_errors.html" %}
+    </form>
+{% endblock %}

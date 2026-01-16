@@ -1,5 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 
 from apps.core.models import Votante, UserConfig, Municipio, Puesto, MetaUsuario
 
@@ -82,3 +83,8 @@ class MetaUsuarioForm(forms.ModelForm):
         if meta <= 0:
             raise forms.ValidationError("La meta electoral debe ser igual o superior a 0")
         return meta
+
+
+class MasivoVotanteForm(forms.Form):
+    archivo = forms.FileField(required=True, widget=forms.FileInput(attrs={'class': 'form-control'}))
+

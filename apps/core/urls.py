@@ -1,6 +1,6 @@
 from django.urls import path, include
 from apps.core import views
-from apps.core.custom_views import usuarios_views, estadisticas_views, listas_views, dashboard_view, consultar_views
+from apps.core.custom_views import usuarios_views, estadisticas_views, listas_views, dashboard_view, consultar_views, votantes_views
 
 urlpatterns = [
     path('consultas/search_votante/', consultar_views.search),
@@ -20,5 +20,6 @@ urlpatterns = [
     path('logout/', views.sign_out, name='logout'),
     path('votante/create/', views.registrar_votante, name='save_votante'),
     path('votante/update/<int:pk>/', views.editar_votante, name='votante_update'),
+    path('votante/masivos/', votantes_views.masivo_votantes, name='votante_masivos'),
     path('', views.sign_in, name='login'),
 ]
