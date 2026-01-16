@@ -1,6 +1,6 @@
 import pandas as pd
 from django.contrib.auth.models import User
-from django.db import transaction
+from django.db import transaction, IntegrityError
 
 from apps.core.models import Votante, Municipio, Puesto
 
@@ -65,6 +65,9 @@ def load_votantes(data):
                                 votante.mesa = row[8]
                             votante.usuario_id = user.id
                             votante.save()
+        except IntegrityError as e:
+            errors.append(e.args[0])
         except:
+            errors.append("No se pudo procesar la solicitud")
             has_errors = True
     return errors
