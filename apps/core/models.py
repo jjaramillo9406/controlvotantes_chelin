@@ -45,6 +45,9 @@ class UserConfig(models.Model):
     class Meta:
         db_table = 'users_config'
 
+    def __str__(self):
+        return self.user.first_name + " " + self.user.last_name
+
 
 class Puesto(models.Model):
     nombre = models.CharField(max_length=150)
@@ -78,6 +81,7 @@ class Votante(models.Model):
     actualizado = models.DateTimeField(auto_now=True)
     referido = models.CharField(max_length=100, null=True)
     municipio = models.ForeignKey(Municipio, null=False, on_delete=models.RESTRICT, default='54001')
+    masivo = models.BooleanField(null=False, default=False)
     logs = HistoricalRecords(table_name='log_votantes')
 
     def __str__(self):
