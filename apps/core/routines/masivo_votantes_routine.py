@@ -19,6 +19,7 @@ def load_votantes(data):
                     raise Exception("Documento no valido")
                 else:
                     if index >= 0:
+                        row[2] = row[2].replace(" ", "")
                         if row[0] == "":
                             errors.append(f"{index}: Nombres del votante no validos")
 
