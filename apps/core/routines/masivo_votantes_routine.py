@@ -43,7 +43,7 @@ def load_votantes(data):
                             errors.append(f"{index}: Puesto no validos")
 
                         if row[9] != "":
-                            user = User.objects.filter(email__startswith=row[9]).first()
+                            user = User.objects.filter(email=row[9].strip()).first()
                             if user is None:
                                 errors.append(f"{index}: Usuario no existe")
                         else:
