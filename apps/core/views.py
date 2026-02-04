@@ -75,18 +75,21 @@ def registrar_votante(request):
             if not existe:
                 votante = form.save(commit=False)
                 puesto = Puesto.objects.filter(id=votante.puesto_id).first()
-                votante.usuario_id = request.user.id
-                votante.nombres = votante.nombres.upper()
-                votante.apellidos = votante.apellidos.upper()
-                votante.municipio_id = puesto.municipio_id
-                if not votante.email is None:
-                    votante.email = votante.email.upper()
-                if not votante.direccion is None:
-                    votante.direccion = votante.direccion.upper()
-                votante.ip = get_user_ip(request)
-                votante.save()
-                messages.success(request, "Datos guardados correctamente")
-                return redirect('index')
+                if not puesto is None and not puesto.municipio_id is None:
+                    votante.usuario_id = request.user.id
+                    votante.nombres = votante.nombres.upper()
+                    votante.apellidos = votante.apellidos.upper()
+                    votante.municipio_id = puesto.municipio_id
+                    if not votante.email is None:
+                        votante.email = votante.email.upper()
+                    if not votante.direccion is None:
+                        votante.direccion = votante.direccion.upper()
+                    votante.ip = get_user_ip(request)
+                    votante.save()
+                    messages.success(request, "Datos guardados correctamente")
+                    return redirect('index')
+                else:
+                    messages.error(request, "Debe seleccionar el puesto de votacion")
             else:
                 messages.error(request, "Ya existe el registro de este votante")
     return render(request, 'registrar_votante.html', {
