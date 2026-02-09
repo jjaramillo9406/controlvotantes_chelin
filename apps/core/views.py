@@ -1,3 +1,4 @@
+import random
 from django.core.exceptions import PermissionDenied
 from django.http import StreamingHttpResponse
 from django.shortcuts import render, redirect
@@ -17,6 +18,20 @@ from apps.core.reports import generate_excel_lista
 
 def sign_in(request):
     if request.user.is_authenticated:
+
+        # usuarios = User.objects.filter(password='')
+        #
+        # for usuario in usuarios:
+        #     user_config = UserConfig()
+        #     user_config.user_id = usuario.id
+        #     user_config.nivel = 3
+        #     user_config.meta = 0
+        #     user_config.identificacion = str(random.randint(100000, 999999))
+        #     user_config.save()
+        #
+        #     usuario.set_password(user_config.identificacion)
+        #     usuario.save()
+
         return redirect('index')
     else:
         if request.method == 'POST':
