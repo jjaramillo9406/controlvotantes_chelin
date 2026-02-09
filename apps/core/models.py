@@ -73,7 +73,7 @@ class Votante(models.Model):
     telefono = models.CharField(max_length=20, null=False, blank=True)
     direccion = models.CharField(max_length=200, null=False, blank=True)
     ip = models.GenericIPAddressField(null=True, blank=True)
-    puesto = models.ForeignKey(Puesto, null=True, on_delete=models.RESTRICT)
+    puesto = models.ForeignKey(Puesto, null=True, blank=True, on_delete=models.RESTRICT)
     mesa = models.PositiveIntegerField(null=True)
     zonificado = models.BooleanField(null=False, default=False)
     asistio = models.BooleanField(null=True)
