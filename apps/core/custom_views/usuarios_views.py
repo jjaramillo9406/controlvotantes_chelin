@@ -32,9 +32,9 @@ def index(request):
 
 @login_required(login_url=reverse_lazy('login'))
 def create(request):
-    form = UserCreateForm()
+    form = UserCreateForm(nivel=request.user.user_config.nivel)
     if request.method == "POST":
-        form = UserCreateForm(request.POST)
+        form = UserCreateForm(data=request.POST, nivel=request.user.user_config.nivel)
         if form.is_valid():
             user = User()
             user.first_name = form.cleaned_data['nombres']
