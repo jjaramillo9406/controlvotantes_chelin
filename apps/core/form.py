@@ -41,6 +41,7 @@ class UserCreateForm(forms.Form):
         (1, 'SOLO CONSULTAS'),
         (2, 'CAPTURADOR'),
         (3, 'VALIDADOR'),
+        (90, 'ORIENTADOR'),
         (99, 'ADMINISTRADOR')
     )
 

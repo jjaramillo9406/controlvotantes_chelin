@@ -13,8 +13,16 @@ from apps.core.models import UserConfig, MetaUsuario, Votante
 
 @login_required(login_url=reverse_lazy('login'))
 def index(request):
-    if request.user.user_config.nivel == 99:
-        usuarios = User.objects.all()
+    if request.user.user_config.nivel >= 90:
+        usuarios = []
+        if request.user.user_config.nivel == 99:
+            usuarios = User.objects.all()
+        else:
+            users_config = UserConfig.objects.filter(orientador_id=request.user.id)
+            users_id = []
+            for user_config in users_config:
+                users_id.append(user_config.user_id)
+            usuarios = User.objects.filter(id__in=users_id)
         return render(request, "usuarios/index.html", {
             'usuarios': usuarios
         })
@@ -42,6 +50,8 @@ def create(request):
             user_config.identificacion = form.cleaned_data['identificacion']
             user_config.nivel = form.cleaned_data['nivel']
             user_config.meta = form.cleaned_data['meta']
+            if request.user.user_config.nivel == 90:
+                user_config.orientador_id = request.user.id
             user_config.save()
 
             meta_electoral = MetaUsuario()
@@ -62,6 +72,9 @@ def create(request):
 def show(request, pk):
     usuario = User.objects.filter(id=pk).first()
     if usuario is not None:
+        if request.user.user_config.nivel == 90:
+            if usuario.user_config.orientador_id != request.user.id:
+                raise PermissionDenied
         config = UserConfig.objects.filter(user_id=usuario.id).first()
         metas = MetaUsuario.objects.filter(user_id=usuario.id)
         return render(request, "usuarios/detail.html", {
@@ -78,6 +91,10 @@ def show(request, pk):
 def create_meta(request, pk):
     form = MetaUsuarioForm()
     if request.method == 'POST':
+        usuario = User.objects.filter(id=pk).first()
+        if request.user.user_config == 90:
+            if usuario.user_config.orientador_id != request.user.id:
+                raise PermissionDenied
         user_config = UserConfig.objects.filter(user_id=request.user.id).first()
         form = MetaUsuarioForm(request.POST)
         if form.is_valid():
