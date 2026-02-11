@@ -41,6 +41,7 @@ class UserCreateForm(forms.Form):
         (1, 'SOLO CONSULTAS'),
         (2, 'CAPTURADOR'),
         (3, 'VALIDADOR'),
+        (90, 'ORIENTADOR'),
         (99, 'ADMINISTRADOR')
     )
 
@@ -51,6 +52,13 @@ class UserCreateForm(forms.Form):
     email = forms.EmailField(max_length=150, widget=forms.EmailInput(attrs={'class': 'form-control text-uppercase'}))
     meta = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
     puesto = forms.ModelChoiceField(queryset=Puesto.objects.all(), required=False, widget=forms.Select(attrs={'class': 'form-control'}))
+
+    def __init__(self, *args, nivel=0, **kwargs):
+        super().__init__(*args, **kwargs)
+        if nivel == 90:
+            self.fields['nivel'].choices = [
+                (2, 'CAPTURADOR')
+            ]
 
     def clean_identificacion(self):
         identificacion = self.cleaned_data['identificacion']
@@ -67,6 +75,8 @@ class UserCreateForm(forms.Form):
 
     def clean_email(self):
         return self.cleaned_data['email'].upper()
+
+
 
 
 class MetaUsuarioForm(forms.ModelForm):

@@ -15,15 +15,24 @@ def index(request):
     votantes = []
     if request.method == "POST":
         if request.POST.get('user_id') != 0:
-            votantes = Votante.objects.filter(usuario_id=request.POST.get('user_id'))
+            if request.user.user_config.nivel == 99:
+                votantes = Votante.objects.filter(usuario_id=request.POST.get('user_id'))
+            if request.user.user_config.nivel == 90:
+                votantes = Votante.objects.filter(usuario_id=request.POST.get('user_id'), usuario__user_config__orientador_id=request.user.id)
             selected = request.POST.get('user_id')
         else:
-            votantes = Votante.objects.all()
+            if request.user.user_config.nivel == 99:
+                votantes = Votante.objects.all()
+            if request.user.user_config.nivel == 90:
+                votantes = Votante.objects.filter(usuario__user_config__orientador_id=request.user.id)
     else:
-        votantes = Votante.objects.all()
+        if request.user.user_config.nivel == 99:
+            votantes = Votante.objects.all()
+        if request.user.user_config.nivel == 90:
+            votantes = Votante.objects.filter(usuario__user_config__orientador_id=request.user.id)
     usuarios = User.objects.order_by('first_name').all()
     return render(request, "listas/index.html", {
         'listado': votantes,
         'usuarios': usuarios,
-        'selected': 0
+        'selected': selected
     })

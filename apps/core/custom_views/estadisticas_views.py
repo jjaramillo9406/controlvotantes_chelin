@@ -14,9 +14,13 @@ from apps.core.models import Votante, Municipio, UserConfig
 @login_required(login_url=reverse_lazy('login'))
 @require_http_methods(['GET'])
 def index(request):
-    usuarios = User.objects.all()
     estadisticas = []
     registros_municipios = []
+
+    if request.user.user_config.nivel == 99:
+        usuarios = User.objects.all()
+    if request.user.user_config.nivel == 90:
+        usuarios = User.objects.filter(user_config__orientador_id=request.user.id)
 
     meta_electoral = 0
     total_registrados = 0
