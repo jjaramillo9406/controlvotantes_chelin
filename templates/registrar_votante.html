@@ -167,6 +167,27 @@
                     {% endif %}
                 </div>
 
+                <!-- Mesa -->
+                <div>
+                    <label
+                            for="{{ form.mesa.id_for_label }}"
+                            class="block text-sm font-medium text-gray-700 mb-2"
+                    >
+                        Mesa
+                    </label>
+                    <div class="relative">
+                        <div
+                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                        >
+                            <i class="fas fa-table text-gray-400"></i>
+                        </div>
+                        {{ form.mesa }}
+                    </div>
+                    {% if form.mesa.errors %}
+                        <p class="mt-1 text-sm text-blue-600">{{ form.mesa.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
                 <!-- Referido -->
                 <div>
                     <label
