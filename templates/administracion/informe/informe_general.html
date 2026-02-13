@@ -1,0 +1,411 @@
+{% extends "shared/layout.html" %}
+{% load static %}
+
+{% block title %}Informe General{% endblock %}
+
+{% block content %}
+<div class="w-full max-w-screen-2xl mx-auto px-4">
+  <!-- Header Card -->
+  <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-6 w-full">
+    <div class="gradient-header px-6 py-4">
+      <div class="flex items-center justify-between flex-wrap gap-4">
+        <div class="flex items-center space-x-3">
+          <div class="bg-white rounded-full p-2">
+            <i class="fas fa-chart-bar icon-institucional text-2xl"></i>
+          </div>
+          <h1 class="text-2xl font-bold text-white">Informe General</h1>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs de Municipios -->
+    <div class="p-6">
+      <div class="border-b border-gray-200">
+        <nav class="flex flex-wrap -mb-px space-x-2" aria-label="Tabs">
+          {% for municipio in municipios %}
+          <button
+            type="button"
+            class="municipio-tab whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm transition-colors duration-200 {% if forloop.first %}border-blue-800 text-blue-800{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %}"
+            data-municipio-id="{{ municipio.id }}"
+            data-municipio-nombre="{{ municipio.nombre }}"
+          >
+            <i class="fas fa-city mr-2"></i>{{ municipio.nombre }}
+          </button>
+          {% endfor %}
+        </nav>
+      </div>
+
+      <!-- Contenido de los tabs -->
+      <div class="mt-6">
+        <!-- Loading spinner -->
+        <div id="loadingSpinner" class="hidden text-center py-12">
+          <i class="fas fa-spinner fa-spin text-5xl text-blue-800 mb-4"></i>
+          <p class="text-lg font-medium text-gray-600">Cargando puestos de votación...</p>
+        </div>
+
+        <!-- Contenedor de puestos -->
+        <div id="puestosContainer" class="space-y-4">
+          <!-- Se llenará dinámicamente con cards de puestos -->
+        </div>
+
+        <!-- Mensaje cuando no hay datos -->
+        <div id="emptyMessage" class="hidden text-center py-12 text-gray-500">
+          <i class="fas fa-info-circle text-5xl mb-4 text-gray-300"></i>
+          <p class="text-lg font-medium">No hay puestos de votación</p>
+          <p class="text-sm">En este municipio</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para ver detalle de votantes -->
+<div id="votantesModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+  <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-4/5 lg:w-3/4 shadow-lg rounded-md bg-white">
+    <div class="mt-3">
+      <div class="flex items-center justify-between mb-4 pb-3 border-b">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900" id="modalMesaInfo">
+            <i class="fas fa-users text-blue-800 mr-2"></i>
+            Votantes de la Mesa
+          </h3>
+        </div>
+        <button onclick="closeVotantesModal()" class="text-gray-400 hover:text-gray-600">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Buscador de votantes en modal -->
+      <div class="search-container mb-4">
+        <div class="relative">
+          <i class="fas fa-search search-icon"></i>
+          <input
+            type="text"
+            id="searchVotantesModal"
+            class="search-input"
+            placeholder="Buscar votante..."
+          />
+        </div>
+      </div>
+
+      <!-- Tabla de votantes -->
+      <div class="custom-table-container max-h-96 overflow-y-auto">
+        <table class="custom-table" id="votantesModalTable">
+          <thead>
+            <tr>
+              <th class="sortable" data-column="0" data-type="text">
+                Identificación
+                <span class="sort-icon">
+                  <i class="fas fa-caret-up"></i>
+                  <i class="fas fa-caret-down"></i>
+                </span>
+              </th>
+              <th class="sortable" data-column="1" data-type="text">
+                Nombres
+                <span class="sort-icon">
+                  <i class="fas fa-caret-up"></i>
+                  <i class="fas fa-caret-down"></i>
+                </span>
+              </th>
+              <th class="sortable" data-column="2" data-type="text">
+                Apellidos
+                <span class="sort-icon">
+                  <i class="fas fa-caret-up"></i>
+                  <i class="fas fa-caret-down"></i>
+                </span>
+              </th>
+              <th class="sortable" data-column="3" data-type="text">
+                Líder
+                <span class="sort-icon">
+                  <i class="fas fa-caret-up"></i>
+                  <i class="fas fa-caret-down"></i>
+                </span>
+              </th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="votantesModalTableBody">
+            <!-- Se llenará dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Info de totales -->
+      <div class="mt-4 pt-4 border-t">
+        <p class="text-sm text-gray-600">
+          <span class="font-semibold">Total votantes en la mesa:</span>
+          <span id="totalVotantesMesa" class="text-lg font-bold text-blue-800">0</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const municipioTabs = document.querySelectorAll('.municipio-tab');
+  const puestosContainer = document.getElementById('puestosContainer');
+  const loadingSpinner = document.getElementById('loadingSpinner');
+  const emptyMessage = document.getElementById('emptyMessage');
+
+  let currentMunicipioId = null;
+
+  // Inicializar con el primer municipio
+  if (municipioTabs.length > 0) {
+    const firstTab = municipioTabs[0];
+    currentMunicipioId = firstTab.getAttribute('data-municipio-id');
+    loadPuestos(currentMunicipioId);
+  }
+
+  // Event listeners para los tabs
+  municipioTabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+      // Remover clase activa de todos los tabs
+      municipioTabs.forEach(t => {
+        t.classList.remove('border-blue-800', 'text-blue-800');
+        t.classList.add('border-transparent', 'text-gray-500');
+      });
+
+      // Agregar clase activa al tab seleccionado
+      this.classList.remove('border-transparent', 'text-gray-500');
+      this.classList.add('border-blue-800', 'text-blue-800');
+
+      // Cargar puestos del municipio
+      currentMunicipioId = this.getAttribute('data-municipio-id');
+      loadPuestos(currentMunicipioId);
+    });
+  });
+
+  function loadPuestos(municipioId) {
+    puestosContainer.style.display = 'none';
+    emptyMessage.classList.add('hidden');
+    loadingSpinner.classList.remove('hidden');
+
+    fetch(`/informe_general/puestos/${municipioId}/`)
+      .then(response => response.json())
+      .then(data => {
+        loadingSpinner.classList.add('hidden');
+        
+        if (Array.isArray(data) && data.length > 0) {
+          renderPuestos(data);
+          puestosContainer.style.display = 'block';
+        } else {
+          emptyMessage.classList.remove('hidden');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        loadingSpinner.classList.add('hidden');
+        emptyMessage.classList.remove('hidden');
+      });
+  }
+
+  function renderPuestos(puestos) {
+    puestosContainer.innerHTML = '';
+
+    puestos.forEach(puesto => {
+      const card = document.createElement('div');
+      card.className = 'bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden';
+      
+      // Header del puesto con gradiente rojo-naranja
+      const header = document.createElement('div');
+      header.className = 'px-4 py-3';
+      header.className = 'px-4 py-3 gradient-header';
+      header.innerHTML = `
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-bold text-white flex items-center">
+            <i class="fas fa-building mr-2"></i>
+            ${puesto.nombre}
+          </h3>
+          <span class="bg-white text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
+            ${puesto.total_votantes} votantes
+          </span>
+        </div>
+      `;
+      card.appendChild(header);
+
+      // Grid de mesas
+      const mesasGrid = document.createElement('div');
+      mesasGrid.className = 'p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3';
+      
+      puesto.mesas.forEach(mesa => {
+        const mesaCard = document.createElement('div');
+        mesaCard.className = 'bg-gray-50 rounded-lg p-3 border border-gray-200 hover:shadow-md transition-shadow cursor-pointer relative';
+        mesaCard.title = 'Ver detalle'; // Tooltip nativo del navegador
+        mesaCard.innerHTML = `
+          <div class="text-center">
+            <div class="text-xs text-gray-500 font-medium mb-1">Mesa</div>
+            <div class="text-2xl font-bold text-blue-800">${mesa.numero}</div>
+            <div class="text-xs text-gray-600 mt-1">
+              <i class="fas fa-users text-gray-400"></i>
+              ${mesa.total_votantes}
+            </div>
+          </div>
+        `;
+        
+        // Click para ver votantes
+        mesaCard.addEventListener('click', () => {
+          verVotantes(puesto.id, mesa.numero, puesto.nombre);
+        });
+        
+        mesasGrid.appendChild(mesaCard);
+      });
+      
+      card.appendChild(mesasGrid);
+      puestosContainer.appendChild(card);
+    });
+  }
+});
+
+// Función para ver votantes
+function verVotantes(puestoId, mesaNumero, puestoNombre) {
+  const modal = document.getElementById('votantesModal');
+  const modalMesaInfo = document.getElementById('modalMesaInfo');
+  const votantesTableBody = document.getElementById('votantesModalTableBody');
+  const totalVotantesMesa = document.getElementById('totalVotantesMesa');
+
+  modalMesaInfo.innerHTML = `<i class="fas fa-users text-blue-800 mr-2"></i>${puestoNombre} - Mesa ${mesaNumero}`;
+  votantesTableBody.innerHTML = '<tr><td colspan="5" class="text-center"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
+  
+  modal.classList.remove('hidden');
+
+  fetch(`/informe_general/votantes/${puestoId}/${mesaNumero}/`)
+    .then(response => response.json())
+    .then(data => {
+      if (data && data.votantes) {
+        totalVotantesMesa.textContent = data.total || data.votantes.length;
+
+        // Renderizar votantes
+        votantesTableBody.innerHTML = '';
+        if (data.votantes.length === 0) {
+          votantesTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-500">No hay votantes en esta mesa</td></tr>';
+        } else {
+          data.votantes.forEach(votante => {
+            const row = document.createElement('tr');
+            
+            let estadoBadge = '';
+            if (votante.asistio === true) {
+              estadoBadge = '<span class="badge-success text-xs">Asistió</span>';
+            } else if (votante.asistio === false) {
+              estadoBadge = '<span class="badge-danger text-xs">No asistió</span>';
+            } else if (votante.zonificado) {
+              estadoBadge = '<span class="badge-warning text-xs">Zonificado</span>';
+            } else {
+              estadoBadge = '<span class="badge-secondary text-xs">Pendiente</span>';
+            }
+
+            // Obtener el nombre del líder
+            const liderNombre = votante.lider ? votante.lider : 'Sin líder';
+
+            row.innerHTML = `
+              <td class="text-center">${votante.identificacion}</td>
+              <td>${votante.nombres}</td>
+              <td>${votante.apellidos}</td>
+              <td class="text-center">${liderNombre}</td>
+              <td class="text-center">${estadoBadge}</td>
+            `;
+            votantesTableBody.appendChild(row);
+          });
+        }
+
+        // Setup búsqueda en modal
+        setupModalSearch();
+        setupModalSorting();
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      votantesTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-red-600">Error al cargar votantes</td></tr>';
+    });
+}
+
+function closeVotantesModal() {
+  document.getElementById('votantesModal').classList.add('hidden');
+  document.getElementById('searchVotantesModal').value = '';
+}
+
+function setupModalSearch() {
+  const searchInput = document.getElementById('searchVotantesModal');
+  const table = document.getElementById('votantesModalTable');
+  const tbody = table.querySelector('tbody');
+  const allRows = Array.from(tbody.querySelectorAll('tr'));
+
+  // Remover listeners anteriores
+  const newSearchInput = searchInput.cloneNode(true);
+  searchInput.parentNode.replaceChild(newSearchInput, searchInput);
+
+  newSearchInput.addEventListener('keyup', function() {
+    const searchTerm = this.value.toLowerCase().trim();
+    
+    allRows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      if (text.includes(searchTerm)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  });
+}
+
+function setupModalSorting() {
+  const table = document.getElementById('votantesModalTable');
+  const tbody = table.querySelector('tbody');
+  const sortableHeaders = table.querySelectorAll('th.sortable');
+  let currentSort = { column: null, direction: null };
+
+  sortableHeaders.forEach(header => {
+    // Remover listeners anteriores clonando
+    const newHeader = header.cloneNode(true);
+    header.parentNode.replaceChild(newHeader, header);
+  });
+
+  // Reseleccionar después de clonar
+  const newSortableHeaders = table.querySelectorAll('th.sortable');
+  
+  newSortableHeaders.forEach(header => {
+    header.addEventListener('click', function() {
+      const columnIndex = parseInt(this.dataset.column);
+      const dataType = this.dataset.type;
+      
+      if (currentSort.column === columnIndex) {
+        currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+      } else {
+        currentSort.column = columnIndex;
+        currentSort.direction = 'asc';
+      }
+
+      newSortableHeaders.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+      this.classList.add(`sort-${currentSort.direction}`);
+
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      
+      rows.sort((a, b) => {
+        const aCells = a.querySelectorAll('td');
+        const bCells = b.querySelectorAll('td');
+        const aValue = aCells[columnIndex].textContent.trim().toLowerCase();
+        const bValue = bCells[columnIndex].textContent.trim().toLowerCase();
+
+        if (aValue < bValue) return currentSort.direction === 'asc' ? -1 : 1;
+        if (aValue > bValue) return currentSort.direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+
+      tbody.innerHTML = '';
+      rows.forEach(row => tbody.appendChild(row));
+    });
+  });
+}
+
+// Cerrar modal al hacer clic fuera
+window.onclick = function(event) {
+  const votantesModal = document.getElementById('votantesModal');
+  
+  if (event.target === votantesModal) {
+    closeVotantesModal();
+  }
+}
+</script>
+{% endblock %}
