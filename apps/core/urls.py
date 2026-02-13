@@ -1,8 +1,16 @@
-from django.urls import path, include
+from django.urls import path
 from apps.core import views
-from apps.core.custom_views import usuarios_views, estadisticas_views, listas_views, dashboard_view, consultar_views, votantes_views
+from apps.core.custom_views import (usuarios_views, estadisticas_views, 
+                                    listas_views, dashboard_view, 
+                                    consultar_views, votantes_views, informe_general_view)
 
 urlpatterns = [
+    path('informe_general/', informe_general_view.informe_general_view,
+         name='informe_general'),
+    path('informe_general/puestos/<str:municipio_id>/',
+         informe_general_view.get_puestos_by_municipio, name='get_puestos_by_municipio'),
+    path('informe_general/votantes/<int:puesto_id>/<int:mesa>/',
+         informe_general_view.get_votantes_by_puesto_and_mesa, name='get_votantes_by_puesto_mesa'),
     path('consultas/search_votante/', consultar_views.search),
     path('listas/', listas_views.index, name='listas'),
     path('dashboard/', dashboard_view.index, name='dashboard'),

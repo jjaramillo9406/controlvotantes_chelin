@@ -12,6 +12,7 @@
                 />
             </a>
 
+<<<<<<< HEAD
             <!-- Botón hamburguesa para móvil -->
             <button
                     id="mobileMenuButton"
@@ -214,6 +215,210 @@
             </a>
         </div>
     </div>
+=======
+      <!-- Botón hamburguesa para móvil -->
+      <button
+        id="mobileMenuButton"
+        type="button"
+        class="lg:hidden inline-flex items-center p-2 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 focus:outline-none focus:ring-2 focus:ring-red-400 transition-colors"
+      >
+        <span class="sr-only">Abrir menú</span>
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          />
+        </svg>
+      </button>
+
+      <!-- Menú desktop -->
+      <div class="hidden lg:flex lg:items-center lg:space-x-2">
+        <a
+          href="{% url 'index' %}"
+          class="flex items-center space-x-2 px-4 py-2 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200 font-medium"
+        >
+          <i class="fas fa-user-circle icon-institucional"></i>
+          <span>Mis votantes</span>
+        </a>
+
+        {% if request.session.nivel == 99 %}
+        <a
+          href="{% url 'consultas' %}"
+          class="flex items-center space-x-2 px-4 py-2 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200 font-medium"
+        >
+          <i class="fa fa-solid fa-search icon-institucional"></i>
+          <span>Consultas</span>
+        </a>
+        <a
+          href="{% url 'dashboard' %}"
+          class="flex items-center space-x-2 px-4 py-2 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200 font-medium"
+        >
+          <i class="fa fa-solid fa-gauge-simple-high icon-institucional"></i>
+          <span>Progreso Electoral</span>
+        </a>
+
+        <a
+          href="{% url 'estadisticas' %}"
+          class="flex items-center space-x-2 px-4 py-2 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200 font-medium"
+        >
+          <i class="fas fa-chart-simple icon-institucional"></i>
+          <span>Estadísticas</span>
+        </a>
+
+        <a
+          href="{% url 'listas' %}"
+          class="flex items-center space-x-2 px-4 py-2 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200 font-medium"
+        >
+          <i class="fas fa-table-list icon-institucional"></i>
+          <span>Listas</span>
+        </a>
+
+        <a
+          href="{% url 'usuarios' %}"
+          class="flex items-center space-x-2 px-4 py-2 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200 font-medium"
+        >
+          <i class="fas fa-users icon-institucional"></i>
+          <span>Usuarios</span>
+        </a>
+
+        <!-- Menú Administración con dropdown -->
+        <div class="relative group">
+          <button
+            class="flex items-center space-x-2 px-4 py-2 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200 font-medium"
+          >
+            <i class="fas fa-cogs icon-institucional"></i>
+            <span>Administración</span>
+            <i class="fas fa-chevron-down text-xs ml-1"></i>
+          </button>
+          <div
+            class="absolute left-0 mt-0 w-52 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
+          >
+            <!-- <a
+              class="flex items-center space-x-2 px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 rounded-lg transition-all duration-200"
+              href=""
+            >
+              <i class="fas fa-user-check icon-institucional"></i>
+              <span>Verificar votantes</span>
+            </a> -->
+            <a
+              class="flex items-center space-x-2 px-4 py-3 text-gray-700 hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 rounded-lg transition-all duration-200"
+              href="{% url 'informe_general' %}"
+            >
+                <i class="fas fa-file-invoice icon-institucional"></i>
+                <span>Informe general</span>
+            </a>
+          </div>
+        </div>
+        {% endif %}
+
+        <a
+          href="{% url 'logout' %}"
+          class="flex items-center space-x-2 px-4 py-2 text-white gradient-button rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg ml-2"
+        >
+          <i class="fas fa-sign-out"></i>
+          <span>Salir</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Menú móvil (oculto por defecto) -->
+    <div id="mobileMenu" class="hidden lg:hidden pb-4 space-y-2">
+      <a
+        href="{% url 'index' %}"
+        class="flex items-center space-x-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200"
+      >
+        <i class="fas fa-user-circle icon-institucional w-5"></i>
+        <span class="font-medium">Mis votantes</span>
+      </a>
+
+      {% if request.session.nivel == 99 %}
+      <a
+        href="{% url 'consultas' %}"
+        class="flex items-center space-x-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200"
+      >
+        <i class="fa fa-solid fa-search icon-institucional w-5"></i>
+        <span class="font-medium">Consultas</span>
+      </a>
+      <a
+        href="{% url 'dashboard' %}"
+        class="flex items-center space-x-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200"
+      >
+        <i class="fa fa-solid fa-gauge-simple-high icon-institucional w-5"></i>
+        <span class="font-medium">Progreso Electoral</span>
+      </a>
+      <a
+        href="{% url 'estadisticas' %}"
+        class="flex items-center space-x-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200"
+      >
+        <i class="fas fa-chart-simple icon-institucional w-5"></i>
+        <span class="font-medium">Estadísticas</span>
+      </a>
+
+      <a
+        href="{% url 'listas' %}"
+        class="flex items-center space-x-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200"
+      >
+        <i class="fas fa-table-list icon-institucional w-5"></i>
+        <span class="font-medium">Listas</span>
+      </a>
+
+      <a
+        href="{% url 'usuarios' %}"
+        class="flex items-center space-x-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200"
+      >
+        <i class="fas fa-users icon-institucional w-5"></i>
+        <span class="font-medium">Usuarios</span>
+      </a>
+
+      <!-- Administración con submenú móvil -->
+      <div>
+        <button
+          id="mobileAdminToggle"
+          type="button"
+          class="flex items-center justify-between w-full px-4 py-3 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200"
+        >
+          <div class="flex items-center space-x-3">
+            <i class="fas fa-cogs icon-institucional w-5"></i>
+            <span class="font-medium">Administración</span>
+          </div>
+          <i id="mobileAdminChevron" class="fas fa-chevron-down text-xs text-gray-500 transition-transform duration-200"></i>
+        </button>
+        <div id="mobileAdminSubmenu" class="hidden pl-8 space-y-1 mt-1">
+          <!-- <a
+            href=""
+            class="flex items-center space-x-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200"
+          >
+            <i class="fas fa-user-check icon-institucional w-5"></i>
+            <span class="font-medium">Verificar votantes</span>
+          </a> -->
+          <a
+            href="{% url 'informe_general' %}"
+            class="flex items-center space-x-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200"
+          >
+            <i class="fas fa-file-invoice icon-institucional w-5"></i>
+            <span class="font-medium">Informe general</span>
+          </a>
+        </div>
+      </div>
+      {% endif %}
+
+      <a
+        href="{% url 'logout' %}"
+        class="flex items-center space-x-3 px-4 py-3 text-white gradient-button rounded-lg transition-all duration-200 shadow-md"
+      >
+        <i class="fas fa-sign-out w-5"></i>
+        <span class="font-medium">Salir</span>
+      </a>
+    </div>
+  </div>
+>>>>>>> origin/development
 </nav>
 
 <script>
@@ -225,6 +430,7 @@
         mobileMenu.classList.toggle("hidden");
     });
 
+<<<<<<< HEAD
     // Cerrar menú al hacer click en un enlace (móvil)
     const mobileLinks = mobileMenu?.querySelectorAll("a");
     mobileLinks?.forEach((link) => {
@@ -241,4 +447,24 @@
             mobileMenu?.classList.add("hidden");
         }
     });
+=======
+  // Toggle submenú Administración en móvil
+  const mobileAdminToggle = document.getElementById("mobileAdminToggle");
+  const mobileAdminSubmenu = document.getElementById("mobileAdminSubmenu");
+  const mobileAdminChevron = document.getElementById("mobileAdminChevron");
+
+  mobileAdminToggle?.addEventListener("click", () => {
+    mobileAdminSubmenu.classList.toggle("hidden");
+    mobileAdminChevron.classList.toggle("rotate-180");
+  });
+
+  // Cerrar menú al cambiar tamaño de ventana
+  window.addEventListener("resize", () => {
+    if (window.innerWidth >= 1024) {
+      mobileMenu?.classList.add("hidden");
+      mobileAdminSubmenu?.classList.add("hidden");
+      mobileAdminChevron?.classList.remove("rotate-180");
+    }
+  });
+>>>>>>> origin/development
 </script>
