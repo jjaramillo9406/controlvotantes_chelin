@@ -15,7 +15,7 @@ def load_votantes(data):
             puesto = None
             user = None
             if len(errors) > 0:
-                raise Exception("Documento no valido")
+                raise Exception(errors[0])
             else:
                 if index >= 0:
                     row[2] = str(row[2]).replace(" ", "")
