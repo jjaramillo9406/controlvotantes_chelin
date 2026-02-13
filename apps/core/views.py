@@ -23,7 +23,10 @@ def sign_in(request):
             username = request.POST.get('username')
             password = request.POST.get('password')
             username = username.lower()
-            user = authenticate(username=username, password=password)
+            user = User.objects.filter(username__iexact=username).first()
+            if user is not None:
+                if not user.check_password(password):
+                    user = None
             if user is not None:
                 if user.is_active:
                     config = UserConfig.objects.filter(user_id=user.id).first()
