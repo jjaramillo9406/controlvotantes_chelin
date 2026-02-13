@@ -35,11 +35,11 @@ def load_votantes(data):
                     else:
                         errors.append(f"{index}: Municipio no validos")
 
-                    # if row[7] != "" and not municipio is None:
-                    #     puesto = Puesto.objects.filter(nombre__icontains=row[7]).first()
-                    #     if puesto is None:
-                    #         errors.append(f"{index}: Puesto {row[7]} no existe")
-                    # else:
+                    if row[7] != "" and not municipio is None:
+                        puesto = Puesto.objects.filter(nombre__icontains=row[7]).first()
+                        if puesto is None:
+                            errors.append(f"{index}: Puesto {row[7]} no existe")
+                    #else:
                     #     errors.append(f"{index}: Puesto no validos")
 
                     if row[9] != "":
