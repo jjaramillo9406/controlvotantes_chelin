@@ -9,28 +9,8 @@ from apps.core.models import Municipio, Votante
 
 @login_required(login_url=reverse_lazy('login'))
 def informe_general_view(request):
-    municipios_ids = [
-        '54002',  # GUARAMITO
-        '54239',  # DURANIA
-        '13001',  # CARTAGENA
-        '15001',  # TUNJA
-        '13744',  # SIMITI
-        '54001',  # CUCUTA
-        '68001',  # BUCARAMANGA
-        '11001',  # BOGOTA D.C
-        '76001',  # CALI
-        '08001',  # BARRANQUILLA
-        '54553',  # PUERTO SANTANDER
-        '73026',  # ALVARADO
-        '13683',  # SANTA ROSA
-        '68615',  # RIONEGRO
-        '54405',  # LOS PATIOS
-        '08758',  # SOLEDAD
-        '68276',  # FLORIDABLANCA
-    ]
-
     municipios = Municipio.objects.filter(
-        id__in=municipios_ids).order_by('nombre')
+        depto=54).order_by('nombre')
 
     return render(request, 'administracion/informe/informe_general.html', {
         'municipios': municipios
