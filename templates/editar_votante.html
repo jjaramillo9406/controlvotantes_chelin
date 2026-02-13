@@ -17,124 +17,223 @@
 
         <!-- Formulario -->
         <div class="p-6 sm:p-8">
-            <form method="post" class="space-y-5">
+            <form method="post" class="space-y-5" id="votanteForm">
                 {% csrf_token %}
 
                 <!-- Fila 1: Identificación y Nombres -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Identificación -->
                     <div>
                         <label
                                 for="{{ form.identificacion.id_for_label }}"
                                 class="block text-sm font-medium text-gray-700 mb-2"
-                        >Identificación <span class="text-red-500">*</span></label>
+                        >
+                            Identificación <span class="text-red-500">*</span>
+                        </label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <div
+                                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                            >
                                 <i class="fas fa-id-card text-gray-400"></i>
                             </div>
                             {{ form.identificacion }}
                         </div>
+                        {% if form.identificacion.errors %}
+                            <p class="mt-1 text-sm text-blue-600">
+                                {{ form.identificacion.errors.0 }}
+                            </p>
+                        {% endif %}
                     </div>
 
+                    <!-- Nombres -->
                     <div>
                         <label
                                 for="{{ form.nombres.id_for_label }}"
                                 class="block text-sm font-medium text-gray-700 mb-2"
-                        >Nombres <span class="text-red-500">*</span></label>
+                        >
+                            Nombres <span class="text-red-500">*</span>
+                        </label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <div
+                                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                            >
                                 <i class="fas fa-user text-gray-400"></i>
                             </div>
                             {{ form.nombres }}
                         </div>
+                        {% if form.nombres.errors %}
+                            <p class="mt-1 text-sm text-blue-600">{{ form.nombres.errors.0 }}</p>
+                        {% endif %}
                     </div>
                 </div>
 
                 <!-- Fila 2: Apellidos y Teléfono -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Apellidos -->
                     <div>
                         <label
                                 for="{{ form.apellidos.id_for_label }}"
                                 class="block text-sm font-medium text-gray-700 mb-2"
-                        >Apellidos <span class="text-red-500">*</span></label>
+                        >
+                            Apellidos <span class="text-red-500">*</span>
+                        </label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <div
+                                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                            >
                                 <i class="fas fa-user text-gray-400"></i>
                             </div>
                             {{ form.apellidos }}
                         </div>
+                        {% if form.apellidos.errors %}
+                            <p class="mt-1 text-sm text-blue-600">
+                                {{ form.apellidos.errors.0 }}
+                            </p>
+                        {% endif %}
                     </div>
 
+                    <!-- Teléfono -->
                     <div>
                         <label
                                 for="{{ form.telefono.id_for_label }}"
                                 class="block text-sm font-medium text-gray-700 mb-2"
-                        >Teléfono <span class="text-red-500">*</span></label>
+                        >
+                            Teléfono <span class="text-red-500">*</span>
+                        </label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <div
+                                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                            >
                                 <i class="fas fa-phone text-gray-400"></i>
                             </div>
                             {{ form.telefono }}
                         </div>
+                        {% if form.telefono.errors %}
+                            <p class="mt-1 text-sm text-blue-600">
+                                {{ form.telefono.errors.0 }}
+                            </p>
+                        {% endif %}
                     </div>
                 </div>
 
-                <!-- Fila 3: Dirección -->
+                <!-- Fila 3: Dirección (campo completo) -->
                 <div>
                     <label
                             for="{{ form.direccion.id_for_label }}"
                             class="block text-sm font-medium text-gray-700 mb-2"
-                    >Dirección</label>
+                    >
+                        Dirección
+                    </label>
                     <div class="relative">
-                        <div class="absolute top-3 left-0 pl-3 flex items-start pointer-events-none">
+                        <div
+                                class="absolute top-3 left-0 pl-3 flex items-start pointer-events-none"
+                        >
                             <i class="fas fa-map-marker-alt text-gray-400"></i>
                         </div>
                         {{ form.direccion }}
                     </div>
+                    {% if form.direccion.errors %}
+                        <p class="mt-1 text-sm text-blue-600">{{ form.direccion.errors.0 }}</p>
+                    {% endif %}
                 </div>
 
-                <!-- Fila 4: Correo Electrónico -->
+                <!-- Puesto de votación con búsqueda -->
                 <div>
-                    <label
-                            for="{{ form.email.id_for_label }}"
-                            class="block text-sm font-medium text-gray-700 mb-2"
-                    >Correo Electrónico</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Puesto de votación
+                    </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fas fa-envelope text-gray-400"></i>
+                            <i class="fas fa-building text-gray-400"></i>
                         </div>
-                        {{ form.email }}
+                        <input
+                            type="text"
+                            id="puesto-search"
+                            list="puestos-list"
+                            placeholder="Buscar puesto..."
+                            class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                        >
+                        <datalist id="puestos-list">
+                            {% for value, label in form.puesto.field.choices %}
+                                {% if value %}
+                                    <option value="{{ value }}" data-label="{{ label }}">{{ label }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </datalist>
+                        <input type="hidden" name="{{ form.puesto.name }}" id="puesto-hidden" value="{{ form.puesto.value|default:'' }}">
                     </div>
+                    {% if form.puesto.errors %}
+                        <p class="mt-1 text-sm text-blue-600">{{ form.puesto.errors.0 }}</p>
+                    {% endif %}
                 </div>
 
+                <!-- Mesa -->
+                <div>
+                    <label
+                            for="{{ form.mesa.id_for_label }}"
+                            class="block text-sm font-medium text-gray-700 mb-2"
+                    >
+                        Mesa
+                    </label>
+                    <div class="relative">
+                        <div
+                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                        >
+                            <i class="fas fa-table text-gray-400"></i>
+                        </div>
+                        {{ form.mesa }}
+                    </div>
+                    {% if form.mesa.errors %}
+                        <p class="mt-1 text-sm text-blue-600">{{ form.mesa.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Referido -->
                 <div>
                     <label
                             for="{{ form.referido.id_for_label }}"
                             class="block text-sm font-medium text-gray-700 mb-2"
-                    >Referido</label>
+                    >
+                        Referido
+                    </label>
                     <div class="relative">
-                        <div class="absolute top-3 left-0 pl-3 flex items-start pointer-events-none">
+                        <div
+                                class="absolute top-3 left-0 pl-3 flex items-start pointer-events-none"
+                        >
                             <i class="fas fa-user text-gray-400"></i>
                         </div>
                         {{ form.referido }}
                     </div>
+                    {% if form.referido.errors %}
+                        <p class="mt-1 text-sm text-blue-600">{{ form.referido.errors.0 }}</p>
+                    {% endif %}
                 </div>
 
+                <!-- Fila 4: Correo Electrónico (campo completo) -->
                 <div>
                     <label
-                            for="{{ form.municipio.id_for_label }}"
+                            for="{{ form.email.id_for_label }}"
                             class="block text-sm font-medium text-gray-700 mb-2"
-                    >Municipio</label>
+                    >
+                        Correo Electrónico
+                    </label>
                     <div class="relative">
-                        <div class="absolute top-3 left-0 pl-3 flex items-start pointer-events-none">
-                            <i class="fas fa-user text-gray-400"></i>
+                        <div
+                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                        >
+                            <i class="fas fa-envelope text-gray-400"></i>
                         </div>
-                        {{ form.municipio }}
+                        {{ form.email }}
                     </div>
+                    {% if form.email.errors %}
+                        <p class="mt-1 text-sm text-blue-600">{{ form.email.errors.0 }}</p>
+                    {% endif %}
                 </div>
 
+                <!-- Errores generales del formulario -->
                 {% include 'shared/_form_errors.html' %}
 
-                <!-- Botones -->
+                <!-- Botones de acción -->
                 <div class="flex flex-col sm:flex-row gap-3 pt-4">
                     <button
                             type="submit"
@@ -155,7 +254,7 @@
         </div>
     </div>
 
-    <!-- Info -->
+    <!-- Nota informativa -->
     <div class="mt-6 alert-institucional rounded-lg p-4 shadow-md">
         <div class="flex items-start space-x-3">
             <i class="fas fa-info-circle icon-institucional text-lg mt-0.5"></i>
@@ -168,4 +267,63 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Script para el campo de búsqueda de puesto
+    const puestoSearch = document.getElementById('puesto-search');
+    const puestoHidden = document.getElementById('puesto-hidden');
+    const puestosList = document.getElementById('puestos-list');
+
+    puestoSearch.addEventListener('input', function() {
+        const inputValue = this.value;
+        const options = puestosList.querySelectorAll('option');
+        let found = false;
+
+        options.forEach(option => {
+            const optionLabel = option.getAttribute('data-label');
+            const optionValue = option.value;
+
+            // Buscar por coincidencia exacta del label o value
+            if (optionLabel === inputValue || optionValue === inputValue) {
+                puestoHidden.value = optionValue;
+                // Mostrar el label en el input
+                if (this.value === optionValue) {
+                    this.value = optionLabel;
+                }
+                found = true;
+            }
+        });
+
+        if (!found) {
+            puestoHidden.value = '';
+        }
+    });
+
+    // Evento cuando se selecciona del datalist
+    puestoSearch.addEventListener('change', function() {
+        const inputValue = this.value;
+        const options = puestosList.querySelectorAll('option');
+
+        options.forEach(option => {
+            const optionValue = option.value;
+
+            // Si el input tiene el value (código), reemplazarlo por el label (nombre)
+            if (optionValue === inputValue) {
+                const optionLabel = option.getAttribute('data-label');
+                this.value = optionLabel;
+                puestoHidden.value = optionValue;
+            }
+        });
+    });
+
+    // Cargar valor inicial si existe
+    if (puestoHidden.value) {
+        const options = puestosList.querySelectorAll('option');
+        options.forEach(option => {
+            if (option.value === puestoHidden.value) {
+                puestoSearch.value = option.getAttribute('data-label');
+            }
+        });
+    }
+</script>
 {% endblock %}

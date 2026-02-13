@@ -8,7 +8,7 @@ from apps.core.models import Votante, UserConfig, Municipio, Puesto, MetaUsuario
 class VotanteForm(forms.ModelForm):
     class Meta:
         model = Votante
-        fields = ['identificacion', 'nombres', 'apellidos', 'direccion', 'telefono', 'email', 'referido', 'puesto']
+        fields = ['identificacion', 'nombres', 'apellidos', 'direccion', 'telefono', 'email', 'referido', 'puesto', 'mesa']
         widgets = {
             'identificacion': forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'off'}),
             'nombres': forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'off'}),
@@ -17,7 +17,8 @@ class VotanteForm(forms.ModelForm):
             'telefono': forms.NumberInput(attrs={'class': 'form-control', 'autocomplete': 'off'}),
             'email': forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'off'}),
             'referido': forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'off'}),
-            'puesto': forms.Select(attrs={'class': 'form-control'})
+            'puesto': forms.Select(attrs={'class': 'form-control'}),
+            'mesa': forms.NumberInput(attrs={'class': 'form-control', 'autocomplete': 'off'})
         }
 
     def clean_identificacion(self):
