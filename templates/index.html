@@ -126,7 +126,7 @@ Votantes{% endblock %} {% block content %}
               <td class="text-center">{{ item.nombres }}</td>
               <td class="text-center">{{ item.apellidos }}</td>
               <td class="text-center">{{ item.telefono }}</td>
-              <td class="text-center">{{ item.puesto|default:"N/A" }}</td>
+              <td class="text-center">{{ item.puesto.nombre|default:"N/A" }}</td>
               <td class="text-center">{{ item.mesa|default:"N/A" }}</td>
               <td
                 class="text-center"
