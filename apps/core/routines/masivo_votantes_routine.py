@@ -31,7 +31,7 @@ def load_votantes(data):
                                 errors.append(f"{index}: Documento del votante no valido")
 
                             if row[5] != "":
-                                municipio = Municipio.objects.filter(nombre__icontains=row[5]).first()
+                                municipio = Municipio.objects.filter(nombre__icontains=row[5].strip()).first()
                                 if municipio is None:
                                     errors.append(f"{index}: Municipio {row[5]} no existe")
                             else:

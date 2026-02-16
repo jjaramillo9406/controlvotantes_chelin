@@ -13,15 +13,14 @@ def generate_excel_lista(votantes):
             'Telefono': item.telefono,
             'Puesto': item.puesto.nombre if not item.puesto is None else "N/A",
             'Mesa': item.mesa if not item.mesa is None else "N/A",
-            'FechaRegistro': str(item.creado),
-            'Capturador': item.usuario.first_name + " " + item.usuario.last_name
+            'FechaRegistro': str(item.creado)
         }
         for item in votantes
     ]
 
     output = BytesIO()
 
-    df = pd.DataFrame(data, columns=['Identificacion', 'Nombres', 'Apellidos', 'Direccion', 'Departamento', 'Municipio', 'Telefono', 'Puesto', 'Mesa', 'FechaRegistro', 'Capturador'])
+    df = pd.DataFrame(data, columns=['Identificacion', 'Nombres', 'Apellidos', 'Direccion', 'Departamento', 'Municipio', 'Telefono', 'Puesto', 'Mesa', 'FechaRegistro'])
     writer = pd.ExcelWriter(output, engine='xlsxwriter')
     df.to_excel(writer, sheet_name='Reporte')
     writer.sheets['Reporte'].autofit()
