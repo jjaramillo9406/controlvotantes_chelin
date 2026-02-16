@@ -1,11 +1,13 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.http import StreamingHttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
 
 from apps.core.custom import Estadistica
 from apps.core.models import Votante
+from apps.core.reports import generate_excel_lista
 
 
 @login_required(login_url=reverse_lazy('login'))
@@ -46,3 +48,34 @@ def index(request):
         'usuarios': usuarios,
         'selected': selected
     })
+
+
+@login_required(login_url=reverse_lazy('login'))
+@require_http_methods(['GET'])
+def exportar(request, pk):
+    votantes = []
+    if pk != 0:
+        usuario = User.objects.filter(id=pk).first()
+        if usuario.user_config.nivel == 90:
+            capturadores = User.objects.filter(user_config__orientador_id=usuario.id)
+            capturadores_id = []
+            for capturador in capturadores:
+                capturadores_id.append(capturador.id)
+
+            votantes = Votante.objects.filter(usuario_id__in=capturadores_id)
+        else:
+            if request.user.user_config.nivel == 99:
+                votantes = Votante.objects.filter(usuario_id=pk)[:1000]
+            if request.user.user_config.nivel == 90:
+                votantes = Votante.objects.filter(usuario_id=pk,
+                                                  usuario__user_config__orientador_id=request.user.id)[:1000]
+    else:
+        if request.user.user_config.nivel == 99:
+            votantes = Votante.objects.all()
+        if request.user.user_config.nivel == 90:
+            votantes = Votante.objects.filter(usuario__user_config__orientador_id=request.user.id)
+    reporte = generate_excel_lista(votantes)
+    response = StreamingHttpResponse(reporte,
+                                     content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename=reporte.xlsx'
+    return response

@@ -29,5 +29,6 @@ urlpatterns = [
     path('votante/create/', views.registrar_votante, name='save_votante'),
     path('votante/update/<int:pk>/', views.editar_votante, name='votante_update'),
     path('votante/masivos/', votantes_views.masivo_votantes, name='votante_masivos'),
+    path('listas/exportar/<int:pk>/', listas_views.exportar, name='listas_exportar'),
     path('', views.sign_in, name='login'),
 ]
