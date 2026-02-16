@@ -56,7 +56,6 @@
                             <i class="fas fa-search"></i>
                             <span>Buscar</span>
                         </button>
-                        {% if selected != 0 %}
                         <a
                                 id="btnDescargarReporte"
                                 href="{% url 'descargar_reporte' usuario_lista_id=selected %}"
@@ -65,7 +64,6 @@
                             <i class="fas fa-file-excel"></i>
                             <span>Descargar Reporte</span>
                         </a>
-                        {% endif %}
                     </div>
                 </form>
 
@@ -498,7 +496,15 @@
                 renderTable();
             });
 
-            // render inicial
+            const userSelect = document.querySelector('select[name="user_id"]');
+            const btnDescargar = document.getElementById('btnDescargarReporte');
+            const baseReporteUrl = "{% url 'descargar_reporte' usuario_lista_id=0 %}".replace('/0/', '/{id}/');
+
+            userSelect.addEventListener('change', function () {
+                const userId = this.value;
+                btnDescargar.href = baseReporteUrl.replace('{id}', userId);
+            });
+
             renderTable();
         });
     </script>

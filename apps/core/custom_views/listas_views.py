@@ -33,7 +33,7 @@ def index(request):
                 if request.user.user_config.nivel == 90:
                     votantes = Votante.objects.filter(usuario_id=request.POST.get('user_id'),
                                                       usuario__user_config__orientador_id=request.user.id)[:1000]
-            selected = request.POST.get('user_id')
+            selected = int(request.POST.get('user_id', 0))
         else:
             if request.user.user_config.nivel == 99:
                 votantes = Votante.objects.all()
