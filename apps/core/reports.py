@@ -14,7 +14,7 @@ def generate_excel_lista(votantes):
             'Puesto': item.puesto.nombre if not item.puesto is None else "N/A",
             'Mesa': item.mesa if not item.mesa is None else "N/A",
             'FechaRegistro': str(item.creado),
-            'Capturador': item.user.first_name + " " + item.user.last_name
+            'Capturador': item.usuario.first_name + " " + item.usuario.last_name
         }
         for item in votantes
     ]
