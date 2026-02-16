@@ -72,7 +72,6 @@
 {% include 'shared/_header.html' %}
 <main class="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
     {% include 'shared/_messages.html' %}
-    Usuario: {{ request.user.username }}
     <div class="mt-4">{% block content %} {% endblock %}</div>
 </main>
 
