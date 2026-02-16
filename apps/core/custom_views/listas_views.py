@@ -27,7 +27,7 @@ def index(request):
     return render(request, "listas/index.html", {
         'listado': votantes,
         'usuarios': usuarios,
-        'selected': 0
+        'selected': selected
     })
 
 
