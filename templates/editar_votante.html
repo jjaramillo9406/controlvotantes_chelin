@@ -137,29 +137,54 @@
                     {% endif %}
                 </div>
 
-                <!-- Puesto de votación con búsqueda -->
+                <!-- Fila: Municipio y Comuna -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Municipio -->
+                    <div>
+                        <label for="municipio-select" class="block text-sm font-medium text-gray-700 mb-2">
+                            Municipio
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-city text-gray-400"></i>
+                            </div>
+                            <select id="municipio-select" class="form-control">
+                                <option value="">Seleccione un municipio</option>
+                                {% for municipio in municipios %}
+                                    <option value="{{ municipio.id }}" {% if municipio.id == municipio_id %}selected{% endif %}>{{ municipio.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Comuna -->
+                    <div>
+                        <label for="comuna-select" class="block text-sm font-medium text-gray-700 mb-2">
+                            Comuna
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-map text-gray-400"></i>
+                            </div>
+                            <select id="comuna-select" class="form-control disabled:bg-gray-100">
+                                <option value="">Seleccione una comuna</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Puesto de votación -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <label for="puesto-select" class="block text-sm font-medium text-gray-700 mb-2">
                         Puesto de votación
                     </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-building text-gray-400"></i>
                         </div>
-                        <input
-                            type="text"
-                            id="puesto-search"
-                            list="puestos-list"
-                            placeholder="Buscar puesto..."
-                            class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                        >
-                        <datalist id="puestos-list">
-                            {% for value, label in form.puesto.field.choices %}
-                                {% if value %}
-                                    <option value="{{ value }}" data-label="{{ label }}">{{ label }}</option>
-                                {% endif %}
-                            {% endfor %}
-                        </datalist>
+                        <select id="puesto-select" class="form-control disabled:bg-gray-100">
+                            <option value="">Seleccione un puesto</option>
+                        </select>
                         <input type="hidden" name="{{ form.puesto.name }}" id="puesto-hidden" value="{{ form.puesto.value|default:'' }}">
                     </div>
                     {% if form.puesto.errors %}
@@ -269,61 +294,77 @@
 </div>
 
 <script>
-    // Script para el campo de búsqueda de puesto
-    const puestoSearch = document.getElementById('puesto-search');
+    const municipioSelect = document.getElementById('municipio-select');
+    const comunaSelect = document.getElementById('comuna-select');
+    const puestoSelect = document.getElementById('puesto-select');
     const puestoHidden = document.getElementById('puesto-hidden');
-    const puestosList = document.getElementById('puestos-list');
 
-    puestoSearch.addEventListener('input', function() {
-        const inputValue = this.value;
-        const options = puestosList.querySelectorAll('option');
-        let found = false;
+    const comunaActual = '{{ comuna_id }}';
+    const puestoActual = '{{ puesto_id }}';
 
-        options.forEach(option => {
-            const optionLabel = option.getAttribute('data-label');
-            const optionValue = option.value;
+    function cargarComunas(municipioId, comunaSeleccionada) {
+        comunaSelect.innerHTML = '<option value="">Seleccione una comuna</option>';
+        comunaSelect.disabled = true;
+        puestoSelect.innerHTML = '<option value="">Seleccione un puesto</option>';
+        puestoSelect.disabled = true;
 
-            // Buscar por coincidencia exacta del label o value
-            if (optionLabel === inputValue || optionValue === inputValue) {
-                puestoHidden.value = optionValue;
-                // Mostrar el label en el input
-                if (this.value === optionValue) {
-                    this.value = optionLabel;
-                }
-                found = true;
-            }
-        });
-
-        if (!found) {
-            puestoHidden.value = '';
+        if (municipioId) {
+            fetch(`/votante/comunas/${municipioId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(comuna => {
+                        const option = document.createElement('option');
+                        option.value = comuna.id;
+                        option.textContent = comuna.nombre;
+                        if (String(comuna.id) === String(comunaSeleccionada)) option.selected = true;
+                        comunaSelect.appendChild(option);
+                    });
+                    comunaSelect.disabled = false;
+                    if (comunaSeleccionada) cargarPuestos(comunaSeleccionada, puestoActual);
+                });
         }
+    }
+
+    function cargarPuestos(comunaId, puestoSeleccionado) {
+        puestoSelect.innerHTML = '<option value="">Seleccione un puesto</option>';
+        puestoSelect.disabled = true;
+
+        if (comunaId) {
+            fetch(`/votante/puestos/${comunaId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(puesto => {
+                        const option = document.createElement('option');
+                        option.value = puesto.id;
+                        option.textContent = puesto.nombre;
+                        if (String(puesto.id) === String(puestoSeleccionado)) {
+                            option.selected = true;
+                            puestoHidden.value = puesto.id;
+                        }
+                        puestoSelect.appendChild(option);
+                    });
+                    puestoSelect.disabled = false;
+                });
+        }
+    }
+
+    municipioSelect.addEventListener('change', function() {
+        puestoHidden.value = '';
+        cargarComunas(this.value, null);
     });
 
-    // Evento cuando se selecciona del datalist
-    puestoSearch.addEventListener('change', function() {
-        const inputValue = this.value;
-        const options = puestosList.querySelectorAll('option');
-
-        options.forEach(option => {
-            const optionValue = option.value;
-
-            // Si el input tiene el value (código), reemplazarlo por el label (nombre)
-            if (optionValue === inputValue) {
-                const optionLabel = option.getAttribute('data-label');
-                this.value = optionLabel;
-                puestoHidden.value = optionValue;
-            }
-        });
+    comunaSelect.addEventListener('change', function() {
+        puestoHidden.value = '';
+        cargarPuestos(this.value, null);
     });
 
-    // Cargar valor inicial si existe
-    if (puestoHidden.value) {
-        const options = puestosList.querySelectorAll('option');
-        options.forEach(option => {
-            if (option.value === puestoHidden.value) {
-                puestoSearch.value = option.getAttribute('data-label');
-            }
-        });
+    puestoSelect.addEventListener('change', function() {
+        puestoHidden.value = this.value;
+    });
+
+    // Precargar valores actuales
+    if (municipioSelect.value) {
+        cargarComunas(municipioSelect.value, comunaActual);
     }
 </script>
 {% endblock %}

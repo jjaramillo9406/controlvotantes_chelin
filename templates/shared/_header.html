@@ -214,6 +214,18 @@
       </a>
     </div>
   </div>
+
+  {% if user.is_authenticated %}
+  <div class="user-banner">
+    <div class="container mx-auto px-4 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <i class="fas fa-user-circle"></i>
+        <span class="font-semibold">{{ user.first_name }} {{ user.last_name }}</span>
+      </div>
+      <span class="user-banner-username">{{ user.username }}</span>
+    </div>
+  </div>
+  {% endif %}
 </nav>
 
 <script>
