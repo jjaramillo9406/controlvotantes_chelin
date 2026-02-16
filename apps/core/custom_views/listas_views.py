@@ -1,6 +1,8 @@
+import requests
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import StreamingHttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
@@ -79,3 +81,18 @@ def exportar(request, pk):
                                      content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = f'attachment; filename=reporte.xlsx'
     return response
+
+def descargar_reporte(request, usuario_lista_id):
+    usuario_logueado_id = request.user.id
+    url = f"http://impuestosmunicipalesap.com/cheliweb/reportes/{usuario_logueado_id}/{usuario_lista_id}"
+    try:
+        response = requests.get(url, timeout=60)
+        response.raise_for_status()
+        django_response = HttpResponse(
+            response.content,
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        django_response['Content-Disposition'] = f'attachment; filename="reporte_votantes_{usuario_lista_id}.xlsx"'
+        return django_response
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({'error': f'Error al descargar el reporte: {str(e)}'}, status=500)
