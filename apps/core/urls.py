@@ -13,6 +13,7 @@ urlpatterns = [
          informe_general_view.get_votantes_by_puesto_and_mesa, name='get_votantes_by_puesto_mesa'),
     path('consultas/search_votante/', consultar_views.search),
     path('listas/', listas_views.index, name='listas'),
+    path('listas/reporte/<int:usuario_lista_id>/', listas_views.descargar_reporte, name='descargar_reporte'),
     path('dashboard/', dashboard_view.index, name='dashboard'),
     path('consultas/', consultar_views.index, name='consultas'),
     path('estadisticas/', estadisticas_views.index, name='estadisticas'),
