@@ -1,3 +1,5 @@
+import math
+
 import pandas as pd
 from django.contrib.auth.models import User
 from django.db import transaction, IntegrityError
@@ -53,6 +55,8 @@ def load_votantes(data):
 
                             if len(errors) == 0:
                                 if not Votante.objects.filter(identificacion=row[2]).exists():
+                                    if row[1] is None or row[1] == "nan" or math.isnan(row[1]):
+                                        row[1] = ""
                                     votante = Votante()
                                     votante.nombres = row[0].upper()
                                     votante.apellidos = row[1].upper()
