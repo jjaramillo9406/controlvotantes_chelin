@@ -63,11 +63,11 @@ def load_votantes(data):
                                     votante.puesto_id = None
                                     votante.puesto = None
                                     votante.mesa = 0
-                                    # votante.puesto_id = puesto.id
-                                    # if row[8] != "" and str(row[8]) != "nan":
-                                    #    votante.mesa = row[8]
-                                    # else:
-                                    #    votante.mesa = 0
+                                    votante.puesto_id = puesto.id
+                                    if row[8] != "" and str(row[8]) != "nan":
+                                        votante.mesa = row[8]
+                                    else:
+                                        votante.mesa = 0
                                     votante.usuario_id = user.id
                                     votante.asistio = False
                                     votante.referido = "N/A"
