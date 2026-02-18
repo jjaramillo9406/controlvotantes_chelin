@@ -24,9 +24,6 @@ def load_votantes(data):
                             if row[0] == "":
                                 errors.append(f"{index}: Nombres del votante no validos")
 
-                            if row[1] == "":
-                                errors.append(f"{index}: Apelidos del votante no validos")
-
                             if row[2] == "":
                                 errors.append(f"{index}: Documento del votante no valido")
 
@@ -71,6 +68,25 @@ def load_votantes(data):
                                     votante.usuario_id = user.id
                                     votante.asistio = False
                                     votante.referido = "N/A"
+
+                                    if votante.apellidos == "":
+                                        datos_nombre = votante.nombres.split(" ")
+                                        if len(datos_nombre) == 2:
+                                            votante.nombres = datos_nombre[0]
+                                            votante.apellidos = datos_nombre[1]
+                                        if len(datos_nombre) == 3:
+                                            votante.nombres = datos_nombre[0]
+                                            votante.apellidos = f"{datos_nombre[1]} {datos_nombre[2]}"
+                                        if len(datos_nombre) == 4:
+                                            votante.nombres = f"{datos_nombre[0]} {datos_nombre[1]}"
+                                            votante.apellidos = f"{datos_nombre[2]} {datos_nombre[3]}"
+                                        if len(datos_nombre) == 5:
+                                            votante.nombres = f"{datos_nombre[0]} {datos_nombre[1]}"
+                                            votante.apellidos = f"{datos_nombre[2]} {datos_nombre[3]} {datos_nombre[4]}"
+                                        if len(datos_nombre) == 6:
+                                            votante.nombres = f"{datos_nombre[0]} {datos_nombre[1]}"
+                                            votante.apellidos = f"{datos_nombre[2]} {datos_nombre[3]} {datos_nombre[4]} {datos_nombre[5]}"
+
                                     votante.full_clean()
                                     votante.save()
     except:
