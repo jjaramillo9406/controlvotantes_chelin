@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
 
 from apps.core.custom import Estadistica
-from apps.core.models import Votante
+from apps.core.models import Municipio, Votante
 from apps.core.reports import generate_excel_lista
 
 
@@ -45,10 +45,12 @@ def index(request):
         if request.user.user_config.nivel == 90:
             votantes = Votante.objects.filter(usuario__user_config__orientador_id=request.user.id)[:1000]
     usuarios = User.objects.order_by('first_name').all()
+    municipios = Municipio.objects.filter(depto_id='54').order_by('nombre').all()
     return render(request, "listas/index.html", {
         'listado': votantes,
         'usuarios': usuarios,
-        'selected': selected
+        'selected': selected,
+        'municipios': municipios
     })
 
 

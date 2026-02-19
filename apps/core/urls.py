@@ -1,10 +1,13 @@
 from django.urls import path
 from apps.core import views
-from apps.core.custom_views import (usuarios_views, estadisticas_views, 
+from apps.core.custom_views import (informe_usuarios_view, usuarios_views, estadisticas_views, 
                                     listas_views, dashboard_view, 
                                     consultar_views, votantes_views, informe_general_view)
 
 urlpatterns = [
+    path('informe_usuarios/', informe_usuarios_view.informe_usuarios_view, name='informe_usuarios'),
+    path('informe_usuarios/usuarios/<str:municipio_id>/', informe_usuarios_view.get_usuarios_by_municipio, name='get_usuarios_by_municipio'),
+    path('informe_usuarios/exportar/<str:municipio_id>/', informe_usuarios_view.exportar_informe_usuarios, name='exportar_informe_usuarios'),
     path('informe_general/', informe_general_view.informe_general_view,
          name='informe_general'),
     path('informe_general/puestos/<str:municipio_id>/',

@@ -1,0 +1,333 @@
+{% extends "shared/layout.html" %}
+{% load static %}
+
+{% block title %}Informe de Usuarios{% endblock %}
+
+{% block content %}
+<div class="w-full max-w-screen-2xl mx-auto px-4">
+  <!-- Header Card -->
+  <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-6 w-full">
+    <div class="gradient-header px-6 py-4">
+      <div class="flex items-center justify-between flex-wrap gap-4">
+        <div class="flex items-center space-x-3">
+          <div class="bg-white rounded-full p-2">
+            <i class="fas fa-users icon-institucional text-2xl"></i>
+          </div>
+          <h1 class="text-2xl font-bold text-white">Informe de Usuarios</h1>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-6">
+      <!-- Selector de municipio + botón exportar -->
+      <div class="flex flex-col sm:flex-row items-end gap-4 mb-6">
+        <div class="flex-1 min-w-[250px]">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Municipio</label>
+          <select id="municipioSelect" class="form-control">
+            <option value="">Seleccione un municipio</option>
+            {% for m in municipios %}
+            <option value="{{ m.id }}">{{ m.nombre }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <a
+          id="btnExportar"
+          href="#"
+          class="inline-flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 pointer-events-none opacity-50"
+        >
+          <i class="fas fa-file-excel"></i>
+          <span>Exportar Excel</span>
+        </a>
+      </div>
+
+      <!-- Loading spinner -->
+      <div id="loadingSpinner" class="hidden text-center py-12">
+        <i class="fas fa-spinner fa-spin text-5xl icon-institucional mb-4"></i>
+        <p class="text-lg font-medium text-gray-600">Cargando usuarios...</p>
+      </div>
+
+      <!-- Barra superior con selector de registros -->
+      <div id="tableToolbar" class="hidden flex-col sm:flex-row justify-end items-center gap-4 mb-4">
+        <div class="flex items-center gap-2">
+          <label for="pageSize" class="text-sm text-gray-700 whitespace-nowrap">Mostrar:</label>
+          <select id="pageSize" class="page-size-select">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Tabla -->
+      <div id="tableContainer" class="hidden">
+        <div class="custom-table-container">
+          <table class="custom-table" id="usuariosTable">
+            <thead>
+              <tr>
+                <th class="sortable" data-column="0" data-type="text">
+                  Nombres
+                  <span class="sort-icon">
+                    <i class="fas fa-caret-up"></i>
+                    <i class="fas fa-caret-down"></i>
+                  </span>
+                </th>
+                <th class="sortable" data-column="1" data-type="text">
+                  Apellidos
+                  <span class="sort-icon">
+                    <i class="fas fa-caret-up"></i>
+                    <i class="fas fa-caret-down"></i>
+                  </span>
+                </th>
+                <th class="sortable" data-column="2" data-type="text">
+                  Email
+                  <span class="sort-icon">
+                    <i class="fas fa-caret-up"></i>
+                    <i class="fas fa-caret-down"></i>
+                  </span>
+                </th>
+                <th class="sortable" data-column="3" data-type="text">
+                  Fecha de registro
+                  <span class="sort-icon">
+                    <i class="fas fa-caret-up"></i>
+                    <i class="fas fa-caret-down"></i>
+                  </span>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="usuariosTableBody"></tbody>
+          </table>
+        </div>
+
+        <!-- Controles de paginación -->
+        <div class="pagination-container">
+          <div class="pagination-info">
+            Mostrando <span id="startRecord">1</span> a
+            <span id="endRecord">10</span> de
+            <span id="totalRecords">0</span> registros
+          </div>
+          <div class="pagination-controls">
+            <button id="prevBtn" class="page-btn">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <div id="pageNumbers" class="flex gap-1"></div>
+            <button id="nextBtn" class="page-btn">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sin resultados -->
+      <div id="noResults" class="hidden text-center py-12 text-gray-500">
+        <i class="fas fa-search text-5xl mb-4 text-gray-300"></i>
+        <p class="text-lg font-medium">No se encontraron usuarios para este municipio</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Card -->
+  <div id="infoCard" class="hidden alert-institucional rounded-lg p-4 shadow-md">
+    <div class="flex items-start space-x-3">
+      <i class="fas fa-info-circle icon-institucional text-xl mt-0.5"></i>
+      <div>
+        <p class="text-sm text-gray-800">
+          <span class="font-semibold">Total de usuarios:</span>
+          <span class="text-lg font-bold" id="totalCount">0</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const municipioSelect = document.getElementById('municipioSelect');
+  const tableContainer  = document.getElementById('tableContainer');
+  const tableToolbar    = document.getElementById('tableToolbar');
+  const tbody           = document.getElementById('usuariosTableBody');
+  const noResults       = document.getElementById('noResults');
+  const loadingSpinner  = document.getElementById('loadingSpinner');
+  const btnExportar     = document.getElementById('btnExportar');
+  const infoCard        = document.getElementById('infoCard');
+  const totalCount      = document.getElementById('totalCount');
+  const table           = document.getElementById('usuariosTable');
+  const sortableHeaders = Array.from(table.querySelectorAll('th.sortable'));
+
+  // Paginación
+  const pageSizeSelect = document.getElementById('pageSize');
+  const prevBtn        = document.getElementById('prevBtn');
+  const nextBtn        = document.getElementById('nextBtn');
+  const pageNumbersEl  = document.getElementById('pageNumbers');
+  const startRecord    = document.getElementById('startRecord');
+  const endRecord      = document.getElementById('endRecord');
+  const totalRecords   = document.getElementById('totalRecords');
+
+  let allRows     = [];
+  let currentPage = 1;
+  let pageSize    = parseInt(pageSizeSelect.value, 10) || 10;
+  let currentSort = { column: null, direction: null };
+
+  // ── Renderizar página actual ──────────────────────────────────────────────
+  function renderTable() {
+    const start      = (currentPage - 1) * pageSize;
+    const end        = start + pageSize;
+    const totalPages = Math.max(1, Math.ceil(allRows.length / pageSize));
+
+    allRows.forEach(row => (row.style.display = 'none'));
+    allRows.slice(start, end).forEach(row => (row.style.display = ''));
+
+    startRecord.textContent  = allRows.length ? String(start + 1) : '0';
+    endRecord.textContent    = String(Math.min(end, allRows.length));
+    totalRecords.textContent = String(allRows.length);
+
+    prevBtn.disabled = currentPage === 1;
+    nextBtn.disabled = currentPage === totalPages || allRows.length === 0;
+
+    renderPageNumbers(totalPages);
+  }
+
+  function renderPageNumbers(totalPages) {
+    pageNumbersEl.innerHTML = '';
+
+    function btn(num) {
+      const b = document.createElement('button');
+      b.className = 'page-btn' + (num === currentPage ? ' active' : '');
+      b.textContent = num;
+      b.addEventListener('click', () => { currentPage = num; renderTable(); });
+      return b;
+    }
+
+    function ellipsis() {
+      const s = document.createElement('span');
+      s.className = 'page-btn';
+      s.style.cursor = 'default';
+      s.textContent = '...';
+      return s;
+    }
+
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pageNumbersEl.appendChild(btn(i));
+    } else {
+      pageNumbersEl.appendChild(btn(1));
+      if (currentPage > 3) pageNumbersEl.appendChild(ellipsis());
+      const sp = Math.max(2, currentPage - 1);
+      const ep = Math.min(totalPages - 1, currentPage + 1);
+      for (let i = sp; i <= ep; i++) pageNumbersEl.appendChild(btn(i));
+      if (currentPage < totalPages - 2) pageNumbersEl.appendChild(ellipsis());
+      pageNumbersEl.appendChild(btn(totalPages));
+    }
+  }
+
+  // ── Cargar datos al cambiar municipio ────────────────────────────────────
+  municipioSelect.addEventListener('change', async function () {
+    const municipioId = this.value;
+
+    tableContainer.classList.add('hidden');
+    tableToolbar.classList.add('hidden');
+    tableToolbar.classList.remove('flex');
+    noResults.classList.add('hidden');
+    infoCard.classList.add('hidden');
+    tbody.innerHTML = '';
+    allRows = [];
+    currentPage = 1;
+    currentSort = { column: null, direction: null };
+    sortableHeaders.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+    btnExportar.classList.add('pointer-events-none', 'opacity-50');
+    btnExportar.href = '#';
+
+    if (!municipioId) return;
+
+    loadingSpinner.classList.remove('hidden');
+
+    try {
+      const res      = await fetch(`/informe_usuarios/usuarios/${municipioId}/`);
+      const usuarios = await res.json();
+      loadingSpinner.classList.add('hidden');
+
+      if (!Array.isArray(usuarios) || usuarios.length === 0) {
+        noResults.classList.remove('hidden');
+        return;
+      }
+
+      tbody.innerHTML = usuarios.map(u => `
+        <tr>
+          <td>${u.nombres}</td>
+          <td>${u.apellidos}</td>
+          <td>${u.email}</td>
+          <td>${u.fecha_creacion}</td>
+        </tr>
+      `).join('');
+
+      allRows = Array.from(tbody.querySelectorAll('tr'));
+      currentPage = 1;
+
+      tableToolbar.classList.remove('hidden');
+      tableToolbar.classList.add('flex');
+      tableContainer.classList.remove('hidden');
+      infoCard.classList.remove('hidden');
+      totalCount.textContent = usuarios.length;
+
+      btnExportar.href = `/informe_usuarios/exportar/${municipioId}/`;
+      btnExportar.classList.remove('pointer-events-none', 'opacity-50');
+
+      renderTable();
+    } catch (e) {
+      loadingSpinner.classList.add('hidden');
+      console.error('Error cargando usuarios:', e);
+    }
+  });
+
+  // ── Navegación prev / next ────────────────────────────────────────────────
+  prevBtn.addEventListener('click', () => {
+    if (currentPage > 1) { currentPage--; renderTable(); }
+  });
+  nextBtn.addEventListener('click', () => {
+    const totalPages = Math.ceil(allRows.length / pageSize);
+    if (currentPage < totalPages) { currentPage++; renderTable(); }
+  });
+
+  // ── Cambio de tamaño de página ────────────────────────────────────────────
+  pageSizeSelect.addEventListener('change', function () {
+    pageSize = parseInt(this.value, 10) || 10;
+    currentPage = 1;
+    renderTable();
+  });
+
+  // ── Ordenamiento de columnas ──────────────────────────────────────────────
+  sortableHeaders.forEach(header => {
+    header.addEventListener('click', function () {
+      if (allRows.length === 0) return;
+      const col = parseInt(this.dataset.column, 10);
+
+      if (currentSort.column === col) {
+        currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+      } else {
+        currentSort.column    = col;
+        currentSort.direction = 'asc';
+      }
+
+      sortableHeaders.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+      this.classList.add(`sort-${currentSort.direction}`);
+
+      const dir = currentSort.direction === 'asc' ? 1 : -1;
+      allRows.sort((a, b) => {
+        const aVal = a.cells[col] ? a.cells[col].textContent.trim() : '';
+        const bVal = b.cells[col] ? b.cells[col].textContent.trim() : '';
+        return aVal.localeCompare(bVal, undefined, { numeric: true }) * dir;
+      });
+
+      const fragment = document.createDocumentFragment();
+      allRows.forEach(row => fragment.appendChild(row));
+      tbody.innerHTML = '';
+      tbody.appendChild(fragment);
+
+      currentPage = 1;
+      renderTable();
+    });
+  });
+});
+</script>
+{% endblock %}
