@@ -12,7 +12,7 @@ def informe_general_view(request):
     municipios = Municipio.objects.filter(
         depto=54).order_by('nombre')
 
-    return render(request, 'administracion/informe/informe_general.html', {
+    return render(request, 'informe/informe_general.html', {
         'municipios': municipios
     })
 
