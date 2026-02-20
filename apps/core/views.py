@@ -8,11 +8,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
+from django.http import JsonResponse
 
 from apps.core.http import get_user_ip
 
 from apps.core.form import VotanteForm
-from apps.core.models import Votante, UserConfig, Puesto
+from apps.core.models import Votante, UserConfig, Puesto, Municipio, Comuna
 from apps.core.reports import generate_excel_lista
 
 
@@ -38,7 +39,10 @@ def sign_in(request):
             username = request.POST.get('username')
             password = request.POST.get('password')
             username = username.lower()
-            user = authenticate(username=username, password=password)
+            user = User.objects.filter(username__iexact=username).first()
+            if user is not None:
+                if not user.check_password(password):
+                    user = None
             if user is not None:
                 if user.is_active:
                     config = UserConfig.objects.filter(user_id=user.id).first()
@@ -107,8 +111,10 @@ def registrar_votante(request):
                     messages.error(request, "Debe seleccionar el puesto de votacion")
             else:
                 messages.error(request, "Ya existe el registro de este votante")
+    municipios = Municipio.objects.filter(depto_id='54')
     return render(request, 'registrar_votante.html', {
-        'form': form
+        'form': form,
+        'municipios': municipios
     })
 
 
@@ -125,11 +131,31 @@ def editar_votante(request, pk):
                     form.save()
                     messages.success(request, "Datos actualizados correctamente")
                     return redirect('index')
+            municipios = Municipio.objects.filter(depto_id='54')
+            puesto_actual = votante.puesto
             return render(request, "editar_votante.html", {
-                'form': form
+                'form': form,
+                'municipios': municipios,
+                'municipio_id': puesto_actual.municipio_id if puesto_actual else '',
+                'comuna_id': puesto_actual.comuna_id if puesto_actual else '',
+                'puesto_id': puesto_actual.id if puesto_actual else '',
             })
         else:
             raise PermissionDenied
     else:
         messages.error(request, "Votante no existe")
         return redirect('index')
+
+
+@login_required(login_url=reverse_lazy('login'))
+def get_comunas_by_municipio(request, municipio_id):
+    comunas = Comuna.objects.filter(municipio_id=municipio_id).order_by('nombre')
+    data = [{'id': c.id, 'nombre': c.nombre} for c in comunas]
+    return JsonResponse(data, safe=False)
+
+
+@login_required(login_url=reverse_lazy('login'))
+def get_puestos_by_comuna(request, comuna_id):
+    puestos = Puesto.objects.filter(comuna_id=comuna_id, estado=True).order_by('nombre')
+    data = [{'id': p.id, 'nombre': p.nombre} for p in puestos]
+    return JsonResponse(data, safe=False)

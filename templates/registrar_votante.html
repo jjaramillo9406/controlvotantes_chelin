@@ -137,33 +137,79 @@
                     {% endif %}
                 </div>
 
-                <!-- Puesto de votación con búsqueda -->
+                <!-- Fila: Municipio y Comuna -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Municipio -->
+                    <div>
+                        <label for="municipio-select" class="block text-sm font-medium text-gray-700 mb-2">
+                            Municipio
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-city text-gray-400"></i>
+                            </div>
+                            <select id="municipio-select" class="form-control">
+                                <option value="">Seleccione un municipio</option>
+                                {% for municipio in municipios %}
+                                    <option value="{{ municipio.id }}">{{ municipio.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Comuna -->
+                    <div>
+                        <label for="comuna-select" class="block text-sm font-medium text-gray-700 mb-2">
+                            Comuna
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-map text-gray-400"></i>
+                            </div>
+                            <select id="comuna-select" disabled class="form-control disabled:bg-gray-100">
+                                <option value="">Seleccione una comuna</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Puesto de votación -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <label for="puesto-select" class="block text-sm font-medium text-gray-700 mb-2">
                         Puesto de votación
                     </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-building text-gray-400"></i>
                         </div>
-                        <input 
-                            type="text" 
-                            id="puesto-search" 
-                            list="puestos-list"
-                            placeholder="Buscar puesto..."
-                            class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                        >
-                        <datalist id="puestos-list">
-                            {% for value, label in form.puesto.field.choices %}
-                                {% if value %}
-                                    <option value="{{ value }}" data-label="{{ label }}">{{ label }}</option>
-                                {% endif %}
-                            {% endfor %}
-                        </datalist>
+                        <select id="puesto-select" disabled class="form-control disabled:bg-gray-100">
+                            <option value="">Seleccione un puesto</option>
+                        </select>
                         <input type="hidden" name="{{ form.puesto.name }}" id="puesto-hidden" value="{{ form.puesto.value|default:'' }}">
                     </div>
                     {% if form.puesto.errors %}
                         <p class="mt-1 text-sm text-blue-600">{{ form.puesto.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Mesa -->
+                <div>
+                    <label
+                            for="{{ form.mesa.id_for_label }}"
+                            class="block text-sm font-medium text-gray-700 mb-2"
+                    >
+                        Mesa
+                    </label>
+                    <div class="relative">
+                        <div
+                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                        >
+                            <i class="fas fa-table text-gray-400"></i>
+                        </div>
+                        {{ form.mesa }}
+                    </div>
+                    {% if form.mesa.errors %}
+                        <p class="mt-1 text-sm text-blue-600">{{ form.mesa.errors.0 }}</p>
                     {% endif %}
                 </div>
 
@@ -248,61 +294,55 @@
 </div>
 
 <script>
-    // Script para el campo de búsqueda de puesto
-    const puestoSearch = document.getElementById('puesto-search');
+    const municipioSelect = document.getElementById('municipio-select');
+    const comunaSelect = document.getElementById('comuna-select');
+    const puestoSelect = document.getElementById('puesto-select');
     const puestoHidden = document.getElementById('puesto-hidden');
-    const puestosList = document.getElementById('puestos-list');
 
-    puestoSearch.addEventListener('input', function() {
-        const inputValue = this.value;
-        const options = puestosList.querySelectorAll('option');
-        let found = false;
-        
-        options.forEach(option => {
-            const optionLabel = option.getAttribute('data-label');
-            const optionValue = option.value;
-            
-            // Buscar por coincidencia exacta del label o value
-            if (optionLabel === inputValue || optionValue === inputValue) {
-                puestoHidden.value = optionValue;
-                // Mostrar el label en el input
-                if (this.value === optionValue) {
-                    this.value = optionLabel;
-                }
-                found = true;
-            }
-        });
-        
-        if (!found) {
-            puestoHidden.value = '';
+    municipioSelect.addEventListener('change', function() {
+        comunaSelect.innerHTML = '<option value="">Seleccione una comuna</option>';
+        comunaSelect.disabled = true;
+        puestoSelect.innerHTML = '<option value="">Seleccione un puesto</option>';
+        puestoSelect.disabled = true;
+        puestoHidden.value = '';
+
+        if (this.value) {
+            fetch(`/votante/comunas/${this.value}/`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(comuna => {
+                        const option = document.createElement('option');
+                        option.value = comuna.id;
+                        option.textContent = comuna.nombre;
+                        comunaSelect.appendChild(option);
+                    });
+                    comunaSelect.disabled = false;
+                });
         }
     });
 
-    // Evento cuando se selecciona del datalist
-    puestoSearch.addEventListener('change', function() {
-        const inputValue = this.value;
-        const options = puestosList.querySelectorAll('option');
-        
-        options.forEach(option => {
-            const optionValue = option.value;
-            
-            // Si el input tiene el value (código), reemplazarlo por el label (nombre)
-            if (optionValue === inputValue) {
-                const optionLabel = option.getAttribute('data-label');
-                this.value = optionLabel;
-                puestoHidden.value = optionValue;
-            }
-        });
+    comunaSelect.addEventListener('change', function() {
+        puestoSelect.innerHTML = '<option value="">Seleccione un puesto</option>';
+        puestoSelect.disabled = true;
+        puestoHidden.value = '';
+
+        if (this.value) {
+            fetch(`/votante/puestos/${this.value}/`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(puesto => {
+                        const option = document.createElement('option');
+                        option.value = puesto.id;
+                        option.textContent = puesto.nombre;
+                        puestoSelect.appendChild(option);
+                    });
+                    puestoSelect.disabled = false;
+                });
+        }
     });
 
-    // Cargar valor inicial si existe
-    if (puestoHidden.value) {
-        const options = puestosList.querySelectorAll('option');
-        options.forEach(option => {
-            if (option.value === puestoHidden.value) {
-                puestoSearch.value = option.getAttribute('data-label');
-            }
-        });
-    }
+    puestoSelect.addEventListener('change', function() {
+        puestoHidden.value = this.value;
+    });
 </script>
 {% endblock %}

@@ -95,6 +95,19 @@ Votantes{% endblock %} {% block content %}
                   <i class="fas fa-caret-up"></i>
                   <i class="fas fa-caret-down"></i>
                 </span>
+              </th><th class="sortable" data-column="4" data-type="text">
+                Puesto
+                <span class="sort-icon">
+                  <i class="fas fa-caret-up"></i>
+                  <i class="fas fa-caret-down"></i>
+                </span>
+              </th>
+              <th class="sortable" data-column="4" data-type="text">
+                Mesa
+                <span class="sort-icon">
+                  <i class="fas fa-caret-up"></i>
+                  <i class="fas fa-caret-down"></i>
+                </span>
               </th>
               <th class="sortable" data-column="4" data-type="date">
                 Fecha de registro
@@ -113,6 +126,8 @@ Votantes{% endblock %} {% block content %}
               <td class="text-center">{{ item.nombres }}</td>
               <td class="text-center">{{ item.apellidos }}</td>
               <td class="text-center">{{ item.telefono }}</td>
+              <td class="text-center">{{ item.puesto.nombre|default:"N/A" }}</td>
+              <td class="text-center">{{ item.mesa|default:"N/A" }}</td>
               <td
                 class="text-center"
                 data-timestamp="{{ item.creado|date:'U' }}"

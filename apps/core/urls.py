@@ -1,10 +1,19 @@
-from django.urls import path, include
+from django.urls import path
 from apps.core import views
-from apps.core.custom_views import usuarios_views, estadisticas_views, listas_views, dashboard_view, consultar_views, votantes_views
+from apps.core.custom_views import (usuarios_views, estadisticas_views, 
+                                    listas_views, dashboard_view, 
+                                    consultar_views, votantes_views, informe_general_view)
 
 urlpatterns = [
+    path('informe_general/', informe_general_view.informe_general_view,
+         name='informe_general'),
+    path('informe_general/puestos/<str:municipio_id>/',
+         informe_general_view.get_puestos_by_municipio, name='get_puestos_by_municipio'),
+    path('informe_general/votantes/<int:puesto_id>/<int:mesa>/',
+         informe_general_view.get_votantes_by_puesto_and_mesa, name='get_votantes_by_puesto_mesa'),
     path('consultas/search_votante/', consultar_views.search),
     path('listas/', listas_views.index, name='listas'),
+    path('listas/reporte/<int:usuario_lista_id>/', listas_views.descargar_reporte, name='descargar_reporte'),
     path('dashboard/', dashboard_view.index, name='dashboard'),
     path('consultas/', consultar_views.index, name='consultas'),
     path('estadisticas/', estadisticas_views.index, name='estadisticas'),
@@ -19,7 +28,10 @@ urlpatterns = [
     path('login/', views.sign_in, name='login'),
     path('logout/', views.sign_out, name='logout'),
     path('votante/create/', views.registrar_votante, name='save_votante'),
+    path('votante/comunas/<str:municipio_id>/', views.get_comunas_by_municipio, name='get_comunas_by_municipio'),
+    path('votante/puestos/<int:comuna_id>/', views.get_puestos_by_comuna, name='get_puestos_by_comuna'),
     path('votante/update/<int:pk>/', views.editar_votante, name='votante_update'),
     path('votante/masivos/', votantes_views.masivo_votantes, name='votante_masivos'),
+    path('listas/exportar/<int:pk>/', listas_views.exportar, name='listas_exportar'),
     path('', views.sign_in, name='login'),
 ]

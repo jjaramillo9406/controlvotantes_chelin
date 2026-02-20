@@ -93,6 +93,26 @@ body {
 }
 
 /* ============================================
+   BANNER DE USUARIO
+   ============================================ */
+.user-banner {
+  background: var(--accent-blue-light);
+  padding: 0.35rem 0;
+  border-top: 1px solid var(--gray-200);
+  font-size: 0.8rem;
+  color: var(--primary-blue-dark);
+}
+
+.user-banner i {
+  color: var(--secondary-blue);
+}
+
+.user-banner-username {
+  color: var(--gray-500);
+  font-size: 0.75rem;
+}
+
+/* ============================================
    CONTENEDORES DE TABLA
    ============================================ */
 .custom-table-container {
