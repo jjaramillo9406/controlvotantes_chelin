@@ -55,7 +55,7 @@ def load_votantes(data):
 
                             if len(errors) == 0:
                                 if not Votante.objects.filter(identificacion=row[2]).exists():
-                                    if row[1] is None or row[1] == "nan" or math.isnan(row[1]):
+                                    if row[1] is None or str(row[1]) == "nan":
                                         row[1] = ""
                                     votante = Votante()
                                     votante.nombres = row[0].upper()
@@ -97,5 +97,6 @@ def load_votantes(data):
                                     votante.full_clean()
                                     votante.save()
     except:
+        errors.append("No se pudo procesar su solicitud")
         return errors
     return errors
