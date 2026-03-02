@@ -36,32 +36,35 @@ def create(request):
     if request.method == "POST":
         form = UserCreateForm(data=request.POST, nivel=request.user.user_config.nivel)
         if form.is_valid():
-            user = User()
-            user.first_name = form.cleaned_data['nombres']
-            user.last_name = form.cleaned_data['apellidos']
-            user.email = form.cleaned_data['email']
-            user.set_password(form.cleaned_data['identificacion'])
-            user.is_active = True
-            user.username = form.cleaned_data['email'].lower()
-            user.save()
+            if not User.objects.filter(usernamet=form.cleaned_data['email']).exists():
+                user = User()
+                user.first_name = form.cleaned_data['nombres']
+                user.last_name = form.cleaned_data['apellidos']
+                user.email = form.cleaned_data['email']
+                user.set_password(form.cleaned_data['identificacion'])
+                user.is_active = True
+                user.username = form.cleaned_data['email'].lower()
+                user.save()
 
-            user_config = UserConfig()
-            user_config.user_id = user.id
-            user_config.identificacion = form.cleaned_data['identificacion']
-            user_config.nivel = form.cleaned_data['nivel']
-            user_config.meta = form.cleaned_data['meta']
-            if request.user.user_config.nivel == 90:
-                user_config.orientador_id = request.user.id
-            user_config.save()
+                user_config = UserConfig()
+                user_config.user_id = user.id
+                user_config.identificacion = form.cleaned_data['identificacion']
+                user_config.nivel = form.cleaned_data['nivel']
+                user_config.meta = form.cleaned_data['meta']
+                if request.user.user_config.nivel == 90:
+                    user_config.orientador_id = request.user.id
+                user_config.save()
 
-            meta_electoral = MetaUsuario()
-            meta_electoral.user_id = user.id
-            meta_electoral.meta = user_config.meta
-            meta_electoral.puesto_id = form.cleaned_data['puesto'].id
-            meta_electoral.save()
+                meta_electoral = MetaUsuario()
+                meta_electoral.user_id = user.id
+                meta_electoral.meta = user_config.meta
+                meta_electoral.puesto_id = form.cleaned_data['puesto'].id
+                meta_electoral.save()
 
-            messages.success(request, "Usuario creado exitosamente")
-            return redirect('usuarios')
+                messages.success(request, "Usuario creado exitosamente")
+                return redirect('usuarios')
+            else:
+                messages.warning(request, f"El nombre de usuario {form.cleaned_data['email']} ya se encuentra en uso")
     return render(request, "usuarios/create.html", {
         'form': form
     })
