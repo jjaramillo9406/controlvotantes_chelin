@@ -21,6 +21,8 @@ def load_votantes(data):
                     raise Exception(errors[0])
                 else:
                     if index >= 0:
+                        if index == 161:
+                            p = 0
                         row[2] = str(row[2]).replace(" ", "")
                         if row[2] != 'nan':
                             if row[0] == "":

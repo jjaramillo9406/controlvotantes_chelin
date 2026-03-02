@@ -86,7 +86,7 @@ def exportar_votantes(request):
 
 @login_required(login_url=reverse_lazy('login'))
 def registrar_votante(request):
-    raise PermissionDenied
+    #raise PermissionDenied
     form = VotanteForm()
     if request.method == "POST":
         form = VotanteForm(request.POST)
@@ -122,7 +122,7 @@ def registrar_votante(request):
 @login_required(login_url=reverse_lazy('login'))
 @require_http_methods(['GET', 'POST'])
 def editar_votante(request, pk):
-    raise PermissionDenied
+    #raise PermissionDenied
     votante = Votante.objects.filter(pk=pk).first()
     if not votante is None:
         if votante.usuario_id == request.user.id:
