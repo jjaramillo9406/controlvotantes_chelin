@@ -36,7 +36,7 @@ def create(request):
     if request.method == "POST":
         form = UserCreateForm(data=request.POST, nivel=request.user.user_config.nivel)
         if form.is_valid():
-            if not User.objects.filter(usernamet=form.cleaned_data['email']).exists():
+            if not User.objects.filter(username=form.cleaned_data['email']).exists():
                 user = User()
                 user.first_name = form.cleaned_data['nombres']
                 user.last_name = form.cleaned_data['apellidos']
