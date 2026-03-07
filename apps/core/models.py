@@ -65,6 +65,17 @@ class Puesto(models.Model):
         ordering = ['municipio__nombre', 'nombre']
 
 
+class TipoAsistencia(models.Model):
+    id = models.PositiveIntegerField(null=False, primary_key=True)
+    nombre = models.CharField(max_length=100, null=False, unique=True)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        db_table = 'tipos_asistencias'
+
+
 class Votante(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.RESTRICT)
     identificacion = models.CharField(max_length=20, null=False)
@@ -83,6 +94,7 @@ class Votante(models.Model):
     referido = models.CharField(max_length=100, null=True)
     municipio = models.ForeignKey(Municipio, null=False, on_delete=models.RESTRICT, default='54001')
     masivo = models.BooleanField(null=False, default=False)
+    tipo_asistencia = models.ForeignKey(TipoAsistencia, null=True, on_delete=models.RESTRICT)
     logs = HistoricalRecords(table_name='log_votantes')
 
     def __str__(self):
@@ -103,3 +115,14 @@ class MetaUsuario(models.Model):
 
     class Meta:
         db_table = 'metas_usuarios'
+
+
+class LogAsistenciaVotante(models.Model):
+    votante = models.ForeignKey(Votante, null=False, on_delete=models.RESTRICT)
+    fecha = models.DateTimeField(auto_now_add=True, null=False)
+    ip = models.GenericIPAddressField(null=False)
+    usuario = models.ForeignKey(User, null=False, on_delete=models.RESTRICT)
+    tipo_asistencia = models.ForeignKey(TipoAsistencia, null=False, on_delete=models.RESTRICT)
+
+    class Meta:
+        db_table = 'log_asistencias_votantes'

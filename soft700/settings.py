@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     "whitenoise",
     "simple_history",
     'apps.core',
+    "apps.administracion"
 ]
 
 MIDDLEWARE = [

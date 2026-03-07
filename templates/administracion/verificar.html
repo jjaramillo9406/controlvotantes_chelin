@@ -1,0 +1,813 @@
+{% extends "shared/layout.html" %}
+{% load static %}
+
+{% block title %}Votantes Pendientes de Asignación{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header Card -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-6">
+        <div class="gradient-header px-6 py-4">
+            <div class="flex items-center justify-between flex-wrap gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-white rounded-full p-2">
+                        <i class="fas fa-user-clock icon-institucional text-2xl"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold text-white">Votantes Pendientes de Asignación</h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor de búsqueda y tabla -->
+        <div class="p-6">
+            <!-- Barra superior con buscador y selector de registros -->
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
+                <!-- Buscador -->
+                <div class="search-container mb-0 flex-1">
+                    <div class="relative">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" 
+                               id="searchInput" 
+                               class="search-input" 
+                               placeholder="Buscar votante...">
+                    </div>
+                </div>
+
+                <!-- Selector de registros por página -->
+                <div class="flex items-center gap-2">
+                    <label for="pageSize" class="text-sm text-gray-700 whitespace-nowrap">Mostrar:</label>
+                    <select id="pageSize" class="page-size-select">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Loader -->
+            <div id="tableLoader" class="text-center py-12">
+                <div class="inline-block">
+                    <div class="loading-spinner-large"></div>
+                    <p class="mt-4 text-gray-600 font-medium">Cargando votantes pendientes...</p>
+                </div>
+            </div>
+
+            <!-- Tabla -->
+            <div class="custom-table-container hidden" id="tableContainer">
+                <table class="custom-table" id="votantesTable">
+                    <thead>
+                        <tr>
+                            <th class="sortable" data-column="0" data-type="text">
+                                Identificación
+                                <span class="sort-icon">
+                                    <i class="fas fa-caret-up"></i>
+                                    <i class="fas fa-caret-down"></i>
+                                </span>
+                            </th>
+                            <th class="sortable" data-column="1" data-type="text">
+                                Nombres
+                                <span class="sort-icon">
+                                    <i class="fas fa-caret-up"></i>
+                                    <i class="fas fa-caret-down"></i>
+                                </span>
+                            </th>
+                            <th class="sortable" data-column="2" data-type="text">
+                                Apellidos
+                                <span class="sort-icon">
+                                    <i class="fas fa-caret-up"></i>
+                                    <i class="fas fa-caret-down"></i>
+                                </span>
+                            </th>
+                            <th class="sortable" data-column="3" data-type="text">
+                                Teléfono
+                                <span class="sort-icon">
+                                    <i class="fas fa-caret-up"></i>
+                                    <i class="fas fa-caret-down"></i>
+                                </span>
+                            </th>
+                            <th class="sortable" data-column="4" data-type="text">
+                                Email
+                                <span class="sort-icon">
+                                    <i class="fas fa-caret-up"></i>
+                                    <i class="fas fa-caret-down"></i>
+                                </span>
+                            </th>
+                            <th class="sortable" data-column="5" data-type="text">
+                                Líder
+                                <span class="sort-icon">
+                                    <i class="fas fa-caret-up"></i>
+                                    <i class="fas fa-caret-down"></i>
+                                </span>
+                            </th>
+                            <th>Asignar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="votantesTableBody">
+                        <!-- Las filas se cargarán dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Mensaje cuando no hay resultados -->
+            <div id="noResults" class="hidden text-center py-8 text-gray-500">
+                <i class="fas fa-search text-4xl mb-3 text-gray-300"></i>
+                <p class="text-lg font-medium">No se encontraron votantes pendientes</p>
+                <p class="text-sm">Intenta con otro término de búsqueda</p>
+            </div>
+
+            <!-- Mensaje cuando no hay votantes pendientes -->
+            <div id="noVotantes" class="hidden text-center py-12">
+                <i class="fas fa-check-circle text-6xl mb-4 text-green-500"></i>
+                <p class="text-xl font-bold text-gray-800 mb-2">¡Excelente!</p>
+                <p class="text-gray-600">No hay votantes pendientes de asignación</p>
+            </div>
+
+            <!-- Controles de paginación -->
+            <div class="pagination-container hidden" id="paginationContainer">
+                <div class="pagination-info">
+                    Mostrando <span id="startRecord">1</span> a <span id="endRecord">10</span> de <span id="totalRecords">0</span> registros
+                    <span id="filteredInfo" class="hidden">(filtrado de <span id="totalRecordsAll">0</span> registros)</span>
+                </div>
+                <div class="pagination-controls">
+                    <button id="prevBtn" class="page-btn">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div id="pageNumbers" class="flex gap-1"></div>
+                    <button id="nextBtn" class="page-btn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Card -->
+    <div class="alert-institucional rounded-lg p-4 shadow-md">
+        <div class="flex items-start space-x-3">
+            <i class="fas fa-info-circle icon-institucional text-xl mt-0.5"></i>
+            <div>
+                <p class="text-sm text-gray-800">
+                    <span class="font-semibold">Total de votantes pendientes:</span> 
+                    <span class="text-lg font-bold" id="totalCount">0</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Asignación -->
+<div id="modalAsignacion" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all">
+        <!-- Header del Modal -->
+        <div class="gradient-header px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-white rounded-full p-2">
+                        <i class="fas fa-map-marker-alt icon-institucional text-xl"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-white">Asignar Puesto y Mesa</h2>
+                </div>
+                <button onclick="cerrarModal()" class="text-white hover:text-gray-200 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Contenido del Modal -->
+        <div class="p-6">
+            <!-- Información del Votante -->
+            <div class="bg-gray-50 rounded-lg p-4 mb-6 border-l-4 border-orange-500">
+                <p class="text-sm font-semibold text-gray-600 mb-1">Votante</p>
+                <p class="text-lg font-bold text-gray-800" id="modalVotanteNombre"></p>
+                <p class="text-sm text-gray-600" id="modalVotanteIdentificacion"></p>
+            </div>
+
+            <!-- Formulario -->
+            <form id="formAsignacion" class="space-y-5">
+                <input type="hidden" id="votanteId" name="votante_id">
+
+                <!-- Puesto de Votación -->
+                <div>
+                    <label for="puestoVotacion" class="block text-sm font-medium text-gray-700 mb-2">
+                        Puesto de Votación <span class="text-red-500">*</span>
+                    </label>
+                    <select 
+                        id="puestoVotacion" 
+                        name="puesto"
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    >
+                        <option value="">Seleccione un puesto...</option>
+                    </select>
+                    <p id="errorPuesto" class="mt-1 text-sm text-red-600 hidden"></p>
+                </div>
+
+                <!-- Mesa de Votación -->
+                <div>
+                    <label for="mesaVotacion" class="block text-sm font-medium text-gray-700 mb-2">
+                        Mesa de Votación <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-table text-gray-400"></i>
+                        </div>
+                        <input 
+                            type="number" 
+                            id="mesaVotacion" 
+                            name="mesa"
+                            placeholder="Número de mesa"
+                            min="1"
+                            class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                        >
+                    </div>
+                    <p id="errorMesa" class="mt-1 text-sm text-red-600 hidden"></p>
+                </div>
+
+                <!-- Mensaje de error general -->
+                <div id="errorGeneral" class="hidden bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-exclamation-circle text-red-500 mt-0.5"></i>
+                        <p class="text-sm text-red-600"></p>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                    <button
+                        type="submit"
+                        id="btnGuardar"
+                        class="flex-1 inline-flex items-center justify-center space-x-2 gradient-button text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                    >
+                        <i class="fas fa-save"></i>
+                        <span>Guardar</span>
+                    </button>
+                    <button
+                        type="button"
+                        onclick="cerrarModal()"
+                        class="flex-1 inline-flex items-center justify-center space-x-2 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-all duration-200 shadow-md hover:shadow-lg"
+                    >
+                        <i class="fas fa-times-circle"></i>
+                        <span>Cancelar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    .loading-spinner-large {
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        border: 5px solid rgba(249, 115, 22, 0.2);
+        border-radius: 50%;
+        border-top-color: #f97316;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Animación del modal */
+    #modalAsignacion.flex {
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    #modalAsignacion.flex > div {
+        animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideUp {
+        from {
+            transform: translateY(30px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    /* Estilos personalizados para Select2 */
+    .select2-container--default .select2-selection--single {
+        height: 42px;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 26px;
+        padding-left: 8px;
+        color: #374151;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 40px;
+    }
+
+    .select2-container--default.select2-container--focus .select2-selection--single {
+        border-color: #f97316;
+        box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+
+    .select2-dropdown {
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        padding: 0.5rem;
+    }
+
+    .select2-results__option--highlighted[aria-selected] {
+        background-color: #f97316 !important;
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+// Variable global para la función de recarga
+let cargarVotantesPendientesGlobal;
+
+document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("searchInput");
+    const table = document.getElementById("votantesTable");
+    const tbody = document.getElementById("votantesTableBody");
+    const noResults = document.getElementById("noResults");
+    const noVotantes = document.getElementById("noVotantes");
+    const tableContainer = document.getElementById("tableContainer");
+    const tableLoader = document.getElementById("tableLoader");
+    const paginationContainer = document.getElementById("paginationContainer");
+
+    // Paginación elementos
+    const pageSizeSelect = document.getElementById("pageSize");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const pageNumbers = document.getElementById("pageNumbers");
+    const startRecord = document.getElementById("startRecord");
+    const endRecord = document.getElementById("endRecord");
+    const totalRecords = document.getElementById("totalRecords");
+    const filteredInfo = document.getElementById("filteredInfo");
+    const totalRecordsAll = document.getElementById("totalRecordsAll");
+    const totalCount = document.getElementById("totalCount");
+
+    let allRows = [];
+    let currentPage = 1;
+    let pageSize = parseInt(pageSizeSelect.value, 10) || 10;
+    let filteredRows = [];
+    let currentSort = { column: null, direction: null };
+    let puestosData = [];
+
+    // Cargar votantes pendientes
+    async function cargarVotantesPendientes() {
+        try {
+            const response = await fetch('/gestion/get_votantes_pendientes');
+            if (!response.ok) throw new Error('Error al cargar los datos');
+            
+            const data = await response.json();
+            
+            tableLoader.classList.add('hidden');
+            
+            if (data.length === 0) {
+                noVotantes.classList.remove('hidden');
+                totalCount.textContent = '0';
+                tableContainer.classList.add('hidden');
+                paginationContainer.classList.add('hidden');
+                return;
+            }
+
+            // Construir filas de la tabla
+            tbody.innerHTML = data.map(votante => `
+                <tr data-id="${votante.id}">
+                    <td class="text-center">${votante.identificacion}</td>
+                    <td class="text-center">${votante.nombres}</td>
+                    <td class="text-center">${votante.apellidos}</td>
+                    <td class="text-center">${votante.telefono || 'N/A'}</td>
+                    <td class="text-center">${votante.email || 'N/A'}</td>
+                    <td class="text-center">${votante.lider}</td>
+                    <td class="text-center">
+                        <button 
+                            onclick="abrirModalAsignacion(${votante.id}, '${votante.nombres}', '${votante.apellidos}', '${votante.identificacion}')"
+                            class="inline-flex items-center justify-center w-9 h-9 gradient-button text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                            title="Asignar puesto y mesa">
+                            <i class="fas fa-map-marked-alt text-sm"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            allRows = Array.from(tbody.querySelectorAll("tr"));
+            filteredRows = [...allRows];
+            totalCount.textContent = allRows.length;
+            
+            noVotantes.classList.add('hidden');
+            tableContainer.classList.remove('hidden');
+            paginationContainer.classList.remove('hidden');
+            
+            inicializarOrdenamiento();
+            renderTable();
+            
+        } catch (error) {
+            console.error('Error:', error);
+            tableLoader.classList.add('hidden');
+            noVotantes.querySelector('p:last-child').textContent = 'Error al cargar los votantes pendientes';
+            noVotantes.classList.remove('hidden');
+        }
+    }
+
+    // Asignar la función a la variable global
+    cargarVotantesPendientesGlobal = cargarVotantesPendientes;
+
+    // Cargar puestos de votación
+    async function cargarPuestos() {
+        try {
+            const response = await fetch('/gestion/get_puestos_votacion/');
+            if (!response.ok) throw new Error('Error al cargar puestos');
+            
+            puestosData = await response.json();
+            
+            const selectPuesto = document.getElementById('puestoVotacion');
+            selectPuesto.innerHTML = '<option value="">Seleccione un puesto...</option>';
+            
+            puestosData.forEach(puesto => {
+                const option = document.createElement('option');
+                option.value = puesto.id;
+                option.textContent = puesto.nombre;
+                selectPuesto.appendChild(option);
+            });
+            
+            // Inicializar Select2
+            $('#puestoVotacion').select2({
+                placeholder: 'Buscar puesto de votación...',
+                allowClear: true,
+                width: '100%',
+                language: {
+                    noResults: function() {
+                        return "No se encontraron resultados";
+                    },
+                    searching: function() {
+                        return "Buscando...";
+                    }
+                }
+            });
+            
+            console.log('Puestos cargados:', puestosData.length);
+            
+        } catch (error) {
+            console.error('Error al cargar puestos:', error);
+        }
+    }
+
+    // Inicializar ordenamiento
+    function inicializarOrdenamiento() {
+        const sortableHeaders = Array.from(table.querySelectorAll("th.sortable"));
+        const allHeaders = Array.from(table.querySelectorAll("th"));
+
+        sortableHeaders.forEach((header) => {
+            header.addEventListener("click", function () {
+                const columnIndex = parseInt(this.dataset.column, 10);
+                const dataType = this.dataset.type || "text";
+                sortRows(columnIndex, dataType, allHeaders, sortableHeaders);
+            });
+        });
+    }
+
+    // Función de ordenamiento
+    function sortRows(columnIndex, dataType, allHeaders, sortableHeaders) {
+        if (currentSort.column === columnIndex) {
+            currentSort.direction = currentSort.direction === "asc" ? "desc" : "asc";
+        } else {
+            currentSort.column = columnIndex;
+            currentSort.direction = "asc";
+        }
+
+        allHeaders.forEach((h) => h.classList.remove("sort-asc", "sort-desc"));
+        const headerActive = sortableHeaders.find(
+            (h) => parseInt(h.dataset.column, 10) === columnIndex
+        );
+        if (headerActive) headerActive.classList.add(`sort-${currentSort.direction}`);
+
+        const dir = currentSort.direction === "asc" ? 1 : -1;
+
+        filteredRows.sort((rowA, rowB) => {
+            const aCell = rowA.cells[columnIndex];
+            const bCell = rowB.cells[columnIndex];
+
+            let aVal = aCell ? aCell.textContent.trim() : "";
+            let bVal = bCell ? bCell.textContent.trim() : "";
+
+            const aNum = parseFloat(aVal.replace(/[^\d.-]/g, ""));
+            const bNum = parseFloat(bVal.replace(/[^\d.-]/g, ""));
+            if (!isNaN(aNum) && !isNaN(bNum)) {
+                return (aNum - bNum) * dir;
+            }
+
+            return aVal.localeCompare(bVal, undefined, { numeric: true }) * dir;
+        });
+
+        const fragment = document.createDocumentFragment();
+        filteredRows.forEach((row) => fragment.appendChild(row));
+        tbody.innerHTML = "";
+        tbody.appendChild(fragment);
+
+        currentPage = 1;
+        renderTable();
+    }
+
+    // Render de la tabla
+    function renderTable() {
+        const start = (currentPage - 1) * pageSize;
+        const end = start + pageSize;
+        const totalPages = Math.max(1, Math.ceil(filteredRows.length / pageSize));
+
+        allRows.forEach((row) => (row.style.display = "none"));
+        const rowsToShow = filteredRows.slice(start, end);
+        rowsToShow.forEach((r) => (r.style.display = ""));
+
+        if (filteredRows.length === 0) {
+            tableContainer.classList.add("hidden");
+            noResults.classList.remove("hidden");
+            paginationContainer.classList.add("hidden");
+            startRecord.textContent = "0";
+            endRecord.textContent = "0";
+            totalRecords.textContent = "0";
+        } else {
+            tableContainer.classList.remove("hidden");
+            noResults.classList.add("hidden");
+            paginationContainer.classList.remove("hidden");
+            startRecord.textContent = String(start + 1);
+            endRecord.textContent = String(Math.min(end, filteredRows.length));
+            totalRecords.textContent = String(filteredRows.length);
+        }
+
+        if (filteredRows.length < allRows.length) {
+            filteredInfo.classList.remove("hidden");
+            totalRecordsAll.textContent = String(allRows.length);
+        } else {
+            filteredInfo.classList.add("hidden");
+        }
+
+        prevBtn.disabled = currentPage === 1;
+        nextBtn.disabled = currentPage === totalPages || filteredRows.length === 0;
+
+        renderPageNumbers(totalPages);
+    }
+
+    function renderPageNumbers(totalPages) {
+        pageNumbers.innerHTML = "";
+
+        function createPageButton(pageNum) {
+            const btn = document.createElement("button");
+            btn.className = "page-btn" + (pageNum === currentPage ? " active" : "");
+            btn.textContent = pageNum;
+            btn.addEventListener("click", () => {
+                currentPage = pageNum;
+                renderTable();
+            });
+            return btn;
+        }
+
+        function createEllipsis() {
+            const span = document.createElement("span");
+            span.className = "page-btn";
+            span.style.cursor = "default";
+            span.textContent = "...";
+            return span;
+        }
+
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++)
+                pageNumbers.appendChild(createPageButton(i));
+        } else {
+            pageNumbers.appendChild(createPageButton(1));
+            if (currentPage > 3) pageNumbers.appendChild(createEllipsis());
+
+            const startPage = Math.max(2, currentPage - 1);
+            const endPage = Math.min(totalPages - 1, currentPage + 1);
+            for (let i = startPage; i <= endPage; i++)
+                pageNumbers.appendChild(createPageButton(i));
+
+            if (currentPage < totalPages - 2) pageNumbers.appendChild(createEllipsis());
+            pageNumbers.appendChild(createPageButton(totalPages));
+        }
+    }
+
+    // Navegación
+    prevBtn.addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderTable();
+        }
+    });
+
+    nextBtn.addEventListener("click", () => {
+        const totalPages = Math.ceil(filteredRows.length / pageSize);
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderTable();
+        }
+    });
+
+    pageSizeSelect.addEventListener("change", function () {
+        pageSize = parseInt(this.value, 10) || 10;
+        currentPage = 1;
+        renderTable();
+    });
+
+    // Filtrado
+    searchInput.addEventListener("keyup", function () {
+        const term = this.value.toLowerCase().trim();
+        filteredRows = allRows.filter((row) =>
+            row.textContent.toLowerCase().includes(term)
+        );
+
+        if (currentSort.column !== null && currentSort.direction) {
+            const sortableHeaders = Array.from(table.querySelectorAll("th.sortable"));
+            const allHeaders = Array.from(table.querySelectorAll("th"));
+            const col = currentSort.column;
+            const dataType = (sortableHeaders.find(h => parseInt(h.dataset.column, 10) === col) || {}).dataset?.type || "text";
+            const dir = currentSort.direction === "asc" ? 1 : -1;
+            
+            filteredRows.sort((rowA, rowB) => {
+                const aCell = rowA.cells[col];
+                const bCell = rowB.cells[col];
+                let aVal = aCell ? aCell.textContent.trim() : "";
+                let bVal = bCell ? bCell.textContent.trim() : "";
+
+                const aNum = parseFloat(aVal.replace(/[^\d.-]/g, ""));
+                const bNum = parseFloat(bVal.replace(/[^\d.-]/g, ""));
+                if (!isNaN(aNum) && !isNaN(bNum)) {
+                    return (aNum - bNum) * dir;
+                }
+                return aVal.localeCompare(bVal, undefined, { numeric: true }) * dir;
+            });
+        }
+
+        currentPage = 1;
+        renderTable();
+    });
+
+    // Inicializar
+    cargarVotantesPendientes();
+    cargarPuestos();
+});
+
+// Funciones del modal
+function abrirModalAsignacion(id, nombres, apellidos, identificacion) {
+    document.getElementById('votanteId').value = id;
+    document.getElementById('modalVotanteNombre').textContent = `${nombres} ${apellidos}`;
+    document.getElementById('modalVotanteIdentificacion').textContent = `CC: ${identificacion}`;
+    
+    // Limpiar formulario
+    document.getElementById('formAsignacion').reset();
+    $('#puestoVotacion').val(null).trigger('change');
+    document.getElementById('errorPuesto').classList.add('hidden');
+    document.getElementById('errorMesa').classList.add('hidden');
+    document.getElementById('errorGeneral').classList.add('hidden');
+    
+    document.getElementById('modalAsignacion').classList.remove('hidden');
+    document.getElementById('modalAsignacion').classList.add('flex');
+}
+
+function cerrarModal() {
+    document.getElementById('modalAsignacion').classList.add('hidden');
+    document.getElementById('modalAsignacion').classList.remove('flex');
+}
+
+// Submit del formulario
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('formAsignacion').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Limpiar errores
+        document.getElementById('errorPuesto').classList.add('hidden');
+        document.getElementById('errorMesa').classList.add('hidden');
+        document.getElementById('errorGeneral').classList.add('hidden');
+        
+        const votanteId = document.getElementById('votanteId').value;
+        const puestoId = document.getElementById('puestoVotacion').value;
+        const mesa = document.getElementById('mesaVotacion').value;
+        
+        console.log('Enviando datos:', { votanteId, puestoId, mesa });
+        
+        // Validaciones
+        let hasError = false;
+        
+        if (!puestoId) {
+            document.getElementById('errorPuesto').textContent = 'Debe seleccionar un puesto de votación';
+            document.getElementById('errorPuesto').classList.remove('hidden');
+            hasError = true;
+        }
+        
+        if (!mesa || mesa < 1) {
+            document.getElementById('errorMesa').textContent = 'Debe ingresar un número de mesa válido';
+            document.getElementById('errorMesa').classList.remove('hidden');
+            hasError = true;
+        }
+        
+        if (hasError) return;
+        
+        // Deshabilitar botón
+        const btnGuardar = document.getElementById('btnGuardar');
+        const btnOriginalContent = btnGuardar.innerHTML;
+        btnGuardar.disabled = true;
+        btnGuardar.innerHTML = '<div class="loading-spinner"></div><span>Guardando...</span>';
+        
+        try {
+            const response = await fetch('/gestion/save_puesto_votante/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    votante_id: parseInt(votanteId),
+                    puesto_id: parseInt(puestoId),
+                    mesa: parseInt(mesa)
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok && data.response === 'OK') {
+                // Cerrar modal primero
+                cerrarModal();
+                
+                // Mostrar loader
+                const tableContainer = document.getElementById('tableContainer');
+                const tableLoader = document.getElementById('tableLoader');
+                const paginationContainer = document.getElementById('paginationContainer');
+                const noVotantes = document.getElementById('noVotantes');
+                
+                tableContainer.classList.add('hidden');
+                paginationContainer.classList.add('hidden');
+                noVotantes.classList.add('hidden');
+                tableLoader.classList.remove('hidden');
+                
+                // Recargar solo los datos de la tabla
+                await cargarVotantesPendientesGlobal();
+                
+            } else {
+                const errorGeneral = document.getElementById('errorGeneral');
+                errorGeneral.querySelector('p').textContent = data.error || 'Error al asignar puesto y mesa';
+                errorGeneral.classList.remove('hidden');
+            }
+            
+        } catch (error) {
+            console.error('Error:', error);
+            const errorGeneral = document.getElementById('errorGeneral');
+            errorGeneral.querySelector('p').textContent = 'Error de conexión. Intente nuevamente.';
+            errorGeneral.classList.remove('hidden');
+        } finally {
+            btnGuardar.disabled = false;
+            btnGuardar.innerHTML = btnOriginalContent;
+        }
+    });
+});
+
+// Función para obtener el CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Cerrar modal al hacer clic fuera
+document.getElementById('modalAsignacion').addEventListener('click', function(e) {
+    if (e.target === this) {
+        cerrarModal();
+    }
+});
+</script>
+{% endblock %}
