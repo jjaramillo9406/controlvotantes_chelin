@@ -18,6 +18,8 @@ urlpatterns = [
     path('listas/', listas_views.index, name='listas'),
     path('listas/reporte/<int:usuario_lista_id>/', listas_views.descargar_reporte, name='descargar_reporte'),
     path('dashboard/', dashboard_view.index, name='dashboard'),
+    path('consultas/registrar_asistencia/',
+         consultar_views.registrar_asistencia),
     path('consultas/', consultar_views.index, name='consultas'),
     path('estadisticas/', estadisticas_views.index, name='estadisticas'),
     path('estadisticas/get_estados_municipios', estadisticas_views.est_municipios_view, name='get_estados_municipios'),

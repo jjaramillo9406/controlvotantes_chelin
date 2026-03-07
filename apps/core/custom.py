@@ -48,6 +48,8 @@ class VotanteSearch:
     mesa = None
     estado = ""
     mensaje = ""
+    tipo_asistencia_id = None
+    tipo_asistencia_nombre = None
 
     def to_dict(self):
         return {
@@ -64,6 +66,8 @@ class VotanteSearch:
             "puesto": self.puesto,
             "mesa": self.mesa,
             "estado": self.estado,
+            "tipo_asistencia_id": self.tipo_asistencia_id,
+            "tipo_asistencia_nombre": self.tipo_asistencia_nombre,
             "respuesta": self.mensaje
         }
 

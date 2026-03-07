@@ -11,7 +11,7 @@ Votantes{% endblock %} {% block content %}
           </div>
           <h1 class="text-2xl font-bold text-white">Mis votantes</h1>
         </div>
-        <div class="flex gap-2">
+        <div class="flex justify-content-between gap-2">
           <a
             href="{% url 'exportar_lista' %}"
             class="inline-flex items-center space-x-2 bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
@@ -63,6 +63,37 @@ Votantes{% endblock %} {% block content %}
         </div>
       </div>
 
+      <!-- Resumen de asistencia -->
+      <div class="grid grid-cols-3 gap-4 mb-5">
+        <div class="flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl px-4 py-3 shadow-sm">
+          <div class="flex-shrink-0 w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+            <i class="fas fa-user-check text-green-600 text-lg"></i>
+          </div>
+          <div>
+            <p class="text-xs text-green-700 font-medium uppercase tracking-wide">Asistió</p>
+            <p class="text-2xl font-bold text-green-700">{{ asistio }}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3 shadow-sm">
+          <div class="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+            <i class="fas fa-user-times text-red-600 text-lg"></i>
+          </div>
+          <div>
+            <p class="text-xs text-red-700 font-medium uppercase tracking-wide">No Asistió</p>
+            <p class="text-2xl font-bold text-red-700">{{ no_asistio }}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 shadow-sm">
+          <div class="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+            <i class="fas fa-clock text-gray-500 text-lg"></i>
+          </div>
+          <div>
+            <p class="text-xs text-gray-500 font-medium uppercase tracking-wide">Pendientes</p>
+            <p class="text-2xl font-bold text-gray-600">{{ pendientes }}</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Tabla -->
       <div class="custom-table-container">
         <table class="custom-table" id="votantesTable">
@@ -90,12 +121,6 @@ Votantes{% endblock %} {% block content %}
                 </span>
               </th>
               <th class="sortable" data-column="3" data-type="text">
-                Teléfono
-                <span class="sort-icon">
-                  <i class="fas fa-caret-up"></i>
-                  <i class="fas fa-caret-down"></i>
-                </span>
-              </th><th class="sortable" data-column="4" data-type="text">
                 Puesto
                 <span class="sort-icon">
                   <i class="fas fa-caret-up"></i>
@@ -109,8 +134,22 @@ Votantes{% endblock %} {% block content %}
                   <i class="fas fa-caret-down"></i>
                 </span>
               </th>
-              <th class="sortable" data-column="4" data-type="date">
+              <th class="sortable" data-column="5" data-type="date">
                 Fecha de registro
+                <span class="sort-icon">
+                  <i class="fas fa-caret-up"></i>
+                  <i class="fas fa-caret-down"></i>
+                </span>
+              </th>
+              <th class="sortable" data-column="6" data-type="text">
+                Referido
+                <span class="sort-icon">
+                  <i class="fas fa-caret-up"></i>
+                  <i class="fas fa-caret-down"></i>
+                </span>
+              </th>
+              <th class="sortable" data-column="7" data-type="text">
+                Estado
                 <span class="sort-icon">
                   <i class="fas fa-caret-up"></i>
                   <i class="fas fa-caret-down"></i>
@@ -125,14 +164,25 @@ Votantes{% endblock %} {% block content %}
               <td class="text-center">{{ item.identificacion }}</td>
               <td class="text-center">{{ item.nombres }}</td>
               <td class="text-center">{{ item.apellidos }}</td>
-              <td class="text-center">{{ item.telefono }}</td>
-              <td class="text-center">{{ item.puesto.nombre|default:"N/A" }}</td>
+              <td class="text-center">
+                {{ item.puesto.nombre|default:"N/A" }}
+              </td>
               <td class="text-center">{{ item.mesa|default:"N/A" }}</td>
               <td
                 class="text-center"
                 data-timestamp="{{ item.creado|date:'U' }}"
               >
                 {{ item.creado|date:"d/m/Y H:i" }}
+              </td>
+              <td class="text-center">{{ item.referido|default:"—" }}</td>
+              <td class="text-center">
+                {% if not item.tipo_asistencia_id %}
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">Pendiente</span>
+                {% elif item.tipo_asistencia_id == 3 %}
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">No Asistió</span>
+                {% else %}
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">Asistió</span>
+                {% endif %}
               </td>
               <td class="text-center">
                 <a
@@ -246,7 +296,7 @@ Votantes{% endblock %} {% block content %}
 
       allHeaders.forEach((h) => h.classList.remove("sort-asc", "sort-desc"));
       const headerActive = sortableHeaders.find(
-        (h) => parseInt(h.dataset.column, 10) === columnIndex
+        (h) => parseInt(h.dataset.column, 10) === columnIndex,
       );
       if (headerActive)
         headerActive.classList.add(`sort-${currentSort.direction}`);
@@ -393,7 +443,7 @@ Votantes{% endblock %} {% block content %}
     searchInput.addEventListener("keyup", function () {
       const term = this.value.toLowerCase().trim();
       filteredRows = allRows.filter((row) =>
-        row.textContent.toLowerCase().includes(term)
+        row.textContent.toLowerCase().includes(term),
       );
 
       if (currentSort.column !== null && currentSort.direction) {
@@ -401,7 +451,7 @@ Votantes{% endblock %} {% block content %}
         const dataType =
           (
             sortableHeaders.find(
-              (h) => parseInt(h.dataset.column, 10) === col
+              (h) => parseInt(h.dataset.column, 10) === col,
             ) || {}
           ).dataset?.type || "text";
         const dir = currentSort.direction === "asc" ? 1 : -1;

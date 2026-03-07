@@ -68,10 +68,16 @@ def sign_out(request):
 @login_required(login_url=reverse_lazy('login'))
 def index(request):
     votantes = Votante.objects.filter(usuario_id=request.user.id)
+    pendientes = votantes.filter(tipo_asistencia_id=None).count()
+    asistio = votantes.filter(tipo_asistencia_id__in=[1, 2]).count()
+    no_asistio = votantes.filter(tipo_asistencia_id=3).count()
     form = VotanteForm()
     return render(request, 'index.html', {
         'listado': votantes,
-        'form': form
+        'form': form,
+        'asistio': asistio,
+        'pendientes': pendientes,
+        'no_asistio': no_asistio
     })
 
 @login_required(login_url=reverse_lazy('login'))
