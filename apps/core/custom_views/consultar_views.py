@@ -1,6 +1,7 @@
 import json
 
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -13,10 +14,9 @@ from apps.core.models import LogAsistenciaVotante, TipoAsistencia, Votante
 @login_required(login_url=reverse_lazy('login'))
 @require_http_methods(['GET'])
 def index(request):
-    try:
-        nivel = request.user.user_config.nivel
-    except Exception:
-        nivel = 0
+    nivel = request.user.user_config.nivel
+    if nivel == 2 and request.user.user_config.habilitado_consulta == False:
+        raise PermissionDenied
     puede_registrar = nivel in [3, 99]
     return render(request, "consultas/index.html", {'puede_registrar': puede_registrar})
 
@@ -28,7 +28,11 @@ def search(request):
     if 'nit' in request.GET:
         votante = Votante.objects.filter(
             identificacion=request.GET['nit']).first()
-        if not votante is None:
+        if request.user.user_config.nivel == 2:
+            if votante.usuario_id != request.user.id:
+                votante = None
+                response.mensaje = "Votante no asociado a su usuario"
+        if not votante is None and response.mensaje == "":
             response.identificacion = votante.identificacion
             response.nombres = votante.nombres
             response.apellidos = votante.apellidos

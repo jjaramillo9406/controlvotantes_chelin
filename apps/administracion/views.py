@@ -84,9 +84,9 @@ def save_puesto_votante(request):
 
 @login_required(login_url=reverse_lazy('login'))
 def informe_lideres(request):
-    if request.user.user_config.nivel > 90:
-        informe = sql.get_informe_lideres()
-        informe_puestos = sql.get_informe_puestos()
+    if request.user.user_config.nivel >= 90:
+        informe = sql.get_informe_lideres(request.user.id)
+        informe_puestos = sql.get_informe_puestos(request.user.id)
         total_asistio = sum(i.asistieron_presencial + i.asistieron_no_presencial for i in informe)
         total_no_asistio = sum(i.no_asistieron for i in informe)
         total_pendientes = sum(i.pendientes for i in informe)
@@ -103,8 +103,8 @@ def informe_lideres(request):
 
 @login_required(login_url=reverse_lazy('login'))
 def informe_puestos(request):
-    if request.user.user_config.nivel > 90:
-        informe = sql.get_informe_puestos()
+    if request.user.user_config.nivel >= 90:
+        informe = sql.get_informe_puestos(request.user.id)
         total_asistio = sum(i.asistieron_presencial + i.asistieron_no_presencial for i in informe)
         total_no_asistio = sum(i.no_asistieron for i in informe)
         total_pendientes = sum(i.pendientes for i in informe)

@@ -4,9 +4,9 @@ from apps.administracion.custom.informe_lider import InformeLider
 from apps.administracion.custom.informe_puesto import InformePuesto
 
 
-def get_informe_lideres():
+def get_informe_lideres(us_id):
     with connection.cursor() as cursor:
-        cursor.execute("select * from get_informe_lideres_fn()")
+        cursor.execute(f"select (get_informe_lideres_fn({us_id})).*")
         rows = cursor.fetchall()
 
         informes = []
@@ -23,9 +23,9 @@ def get_informe_lideres():
 
         return informes
 
-def get_informe_puestos():
+def get_informe_puestos(us_id):
     with connection.cursor() as cursor:
-        cursor.execute("select * from get_informe_puestos_fn()")
+        cursor.execute(f"select (get_informe_puestos_fn({us_id})).*")
         rows = cursor.fetchall()
 
         informes = []

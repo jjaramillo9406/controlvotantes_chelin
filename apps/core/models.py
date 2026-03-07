@@ -42,6 +42,7 @@ class UserConfig(models.Model):
     identificacion = models.CharField(max_length=10, null=False, unique=True, default='')
     meta = models.PositiveIntegerField(null=False, default=0)
     orientador = models.ForeignKey(User, null=True, on_delete=models.RESTRICT, related_name='orientador')
+    habilitado_consulta = models.BooleanField(null=False, default=False)
 
     class Meta:
         db_table = 'users_config'
