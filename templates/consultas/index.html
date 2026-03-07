@@ -206,15 +206,11 @@ function showResults(data) {
                     ${mostrarBotones ? `
                     <button id="btn-1" onclick="registrarAsistencia(1,'${data.identificacion}')"
                         style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border:none;border-radius:10px;background:#16a34a;color:#fff;font-size:14px;font-weight:600;cursor:pointer;">
-                        <i class="fas fa-user-check"></i> Asistió
-                    </button>
-                    <button id="btn-3" onclick="registrarAsistencia(3,'${data.identificacion}')"
-                        style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border:none;border-radius:10px;background:#dc2626;color:#fff;font-size:14px;font-weight:600;cursor:pointer;">
-                        <i class="fas fa-user-times"></i> No Asistió
+                        <i class="fas fa-user-check"></i> Presencial
                     </button>
                     <button id="btn-2" onclick="registrarAsistencia(2,'${data.identificacion}')"
                         style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border:none;border-radius:10px;background:#2563eb;color:#fff;font-size:14px;font-weight:600;cursor:pointer;">
-                        <i class="fas fa-video"></i> Asistió Remoto
+                        <i class="fas fa-video"></i> No Presencial
                     </button>` : ''}
                 </div>
 
