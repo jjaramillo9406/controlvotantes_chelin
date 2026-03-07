@@ -168,7 +168,7 @@
           <i class="fa fa-solid fa-search icon-institucional"></i>
           <span>Consultas</span>
         </a>        
-        {% endif %}
+      {% endif %}
 
       {% if request.session.nivel == 99 %}
       <a
@@ -257,6 +257,32 @@
         </div>
       </div>      
       {% endif %}
+
+      {% if request.session.nivel == 90 %}
+                    <a
+                            href="{% url 'estadisticas' %}"
+                            class="flex items-center space-x-2 px-4 py-2 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200 font-medium"
+                    >
+                        <i class="fas fa-chart-simple icon-institucional"></i>
+                        <span>Estadísticas</span>
+                    </a>
+
+                    <a
+                            href="{% url 'listas' %}"
+                            class="flex items-center space-x-2 px-4 py-2 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200 font-medium"
+                    >
+                        <i class="fas fa-table-list icon-institucional"></i>
+                        <span>Listas</span>
+                    </a>
+
+                    <a
+                            href="{% url 'usuarios' %}"
+                            class="flex items-center space-x-2 px-4 py-2 text-gray-700 rounded-lg hover:bg-gradient-to-r hover:from-red-100 hover:to-orange-100 transition-all duration-200 font-medium"
+                    >
+                        <i class="fas fa-users icon-institucional"></i>
+                        <span>Usuarios</span>
+                    </a>
+                {% endif %}
 
       <a
         href="{% url 'logout' %}"
