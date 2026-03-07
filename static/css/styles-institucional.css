@@ -1131,7 +1131,7 @@ select.form-control option:checked {
    ============================================ */
 /* Contenedor principal */
 .consulta-container {
-  max-width: 800px;
+  max-width: 1800px;
   margin: 3rem auto;
   padding: 0 1rem;
 }
