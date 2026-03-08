@@ -75,6 +75,7 @@ def search(request):
 @require_http_methods(['POST'])
 def registrar_asistencia(request):
     try:
+        return JsonResponse({'respuesta': 'Opción ya no se encuentra habilitada'}, status=500)
         body = json.loads(request.body)
         identificacion = body.get('identificacion')
         tipo_asistencia_id = body.get('tipo_asistencia_id')
