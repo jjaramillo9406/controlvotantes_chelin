@@ -8,13 +8,14 @@
 {% block styles %}
 <style>
     #searchCard { max-width: 580px; margin: 0 auto; }
-    .result-body { display: grid; grid-template-columns: 1fr 240px; gap: 16px; align-items: start; padding: 16px 20px; }
-    .result-fields { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-    .result-actions { display: flex; flex-direction: column; gap: 10px; }
+    .result-body { display: flex; flex-direction: column; gap: 16px; padding: 16px 20px; }
+    .result-fields { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .result-actions { display: flex; flex-direction: row; gap: 10px; flex-wrap: wrap; }
+    .result-actions button { flex: 1; min-width: 160px; }
     @media (max-width: 640px) {
-        .result-body { grid-template-columns: 1fr; }
         .result-fields { grid-template-columns: repeat(2, 1fr); }
         .result-actions { flex-direction: column; }
+        .result-actions button { min-width: unset; }
     }
 </style>
 {% endblock %}
