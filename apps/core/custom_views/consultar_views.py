@@ -17,7 +17,7 @@ def index(request):
     nivel = request.user.user_config.nivel
     if nivel == 2 and request.user.user_config.habilitado_consulta == False:
         raise PermissionDenied
-    puede_registrar = nivel in [3, 99]
+    puede_registrar = nivel in [2, 3, 99]
     return render(request, "consultas/index.html", {'puede_registrar': puede_registrar})
 
 
