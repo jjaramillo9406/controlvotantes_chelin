@@ -28,8 +28,11 @@ db.sqlite3
 
 # IDE-specific files (e.g., PyCharm, VS Code)
 .idea/
-.vscode/
 
 # Sensitive data/settings
 local_settings.py
 .secrets.toml # for Streamlit/other apps
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat
+.gitignore

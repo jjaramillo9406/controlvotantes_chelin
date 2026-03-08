@@ -185,6 +185,7 @@ function showResults(data) {
                         ['fa-calendar','Fecha Registro', formatDate(data.fecha_registro)],
                         ['fa-box','Puesto', data.puesto || 'No asignado'],
                         ['fa-table','Mesa', data.mesa || 'No asignada'],
+                        ['fa-user-tie','Refererido', data.referido || 'N/A'],
                     ].map(([icon, label, value]) => `
                         <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:8px 12px;">
                             <div style="font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px;">
